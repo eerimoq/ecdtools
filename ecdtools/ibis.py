@@ -737,6 +737,9 @@ def _load_4_columns(data):
 def split_numerical(string):
     """Split given string into a number, suffix and unit tuple.
 
+    >>> split_numerical('1.1kOhm')
+    ('1.1', 'k', 'Ohm')
+
     """
 
     mo = re.match(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)(\w*)', string)
@@ -755,6 +758,9 @@ def split_numerical(string):
 
 def convert_numerical(string):
     """Convert given string to a Decimal value.
+
+    >>> convert_numerical('1.1kOhm')
+    Decimal('1.1e3')
 
     """
 
@@ -779,6 +785,11 @@ def convert_numerical(string):
 
 
 def load_file(filename):
+    """Load given IBIS file and return an IbsFile object with its
+    contents.
+
+    """
+
     with open(filename, 'r') as fin:
         string = fin.read()
 
