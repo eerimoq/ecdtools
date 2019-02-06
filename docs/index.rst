@@ -19,3 +19,6 @@ Functions and classes
 .. autofunction:: ecdtools.ibis.split_numerical
 
 .. autofunction:: ecdtools.ibis.convert_numerical
+
+.. autoclass:: ecdtools.ibis.IbsFile
+    :members:

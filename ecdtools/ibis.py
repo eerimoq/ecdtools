@@ -386,6 +386,9 @@ class Parser(textparser.Parser):
 
 
 class IbsFile(object):
+    """An .ibs file.
+
+    """
 
     def __init__(self, string):
         self._version = None
@@ -630,7 +633,7 @@ class IbsFile(object):
 
     @property
     def version(self):
-        """The IBIS version.
+        """The IBIS version string.
 
         """
 
@@ -638,7 +641,7 @@ class IbsFile(object):
 
     @property
     def file_name(self):
-        """The .ibs file name.
+        """The file name string.
 
         """
 
@@ -646,7 +649,7 @@ class IbsFile(object):
 
     @property
     def file_rev(self):
-        """The .ibs file revision.
+        """The file revision string.
 
         """
 
@@ -654,7 +657,7 @@ class IbsFile(object):
 
     @property
     def date(self):
-        """The .ibs date.
+        """The date string.
 
         """
 
@@ -662,7 +665,7 @@ class IbsFile(object):
 
     @property
     def source(self):
-        """The .ibs file source.
+        """The source string.
 
         """
 
@@ -670,7 +673,7 @@ class IbsFile(object):
 
     @property
     def notes(self):
-        """The .ibs file notes.
+        """The notes string.
 
         """
 
@@ -686,7 +689,7 @@ class IbsFile(object):
 
     @property
     def copyright(self):
-        """The Copyright string.
+        """The copyright string.
 
         """
 
