@@ -8,6 +8,10 @@ Electronic circuit design in Python 3.
 
 - `IBIS`_ parsing.
 
+Project homepage: https://github.com/eerimoq/ecdtools
+
+Documentation: http://ecdtools.readthedocs.org/en/latest
+
 Contributing
 ============
 
