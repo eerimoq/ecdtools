@@ -1,5 +1,6 @@
 import logging
 import unittest
+from decimal import Decimal
 
 from ecdtools import ibis
 
@@ -332,6 +333,23 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(
             waveform.table.samples[99],
             ('1.50000nS', '1.58450V', '1.48580V', '1.71990V'))
+
+    def test_load_numerical(self):
+        self.assertEqual(ibis.load_numerical('1.1T'), Decimal('1.1e12'))
+        self.assertEqual(ibis.load_numerical('1.1G'), Decimal('1.1e9'))
+        self.assertEqual(ibis.load_numerical('1.1M'), Decimal('1.1e6'))
+        self.assertEqual(ibis.load_numerical('1.1k'), Decimal('1.1e3'))
+        self.assertEqual(ibis.load_numerical('1.1'),  Decimal('1.1'))
+        self.assertEqual(ibis.load_numerical('1.1m'), Decimal('1.1e-3'))
+        self.assertEqual(ibis.load_numerical('1.1u'), Decimal('1.1e-6'))
+        self.assertEqual(ibis.load_numerical('1.1n'), Decimal('1.1e-9'))
+        self.assertEqual(ibis.load_numerical('1.1p'), Decimal('1.1e-12'))
+        self.assertEqual(ibis.load_numerical('1.1f'), Decimal('1.1e-15'))
+        self.assertEqual(ibis.load_numerical('2.123E-5'), Decimal('0.00002123'))
+        self.assertEqual(ibis.load_numerical('2.123e5'), Decimal('2.123e5'))
+        self.assertEqual(ibis.load_numerical('2.123E+5'), Decimal('2.123e5'))
+        self.assertEqual(ibis.load_numerical('1.1Ohm'), Decimal('1.1'))
+        self.assertEqual(ibis.load_numerical('1.1kOhm'), Decimal('1.1e3'))
 
     def test_load_pybis_files(self):
         filenames = [

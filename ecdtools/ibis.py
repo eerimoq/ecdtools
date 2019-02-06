@@ -1,5 +1,6 @@
 import re
 import logging
+from decimal import Decimal
 
 import textparser
 from textparser import Sequence
@@ -596,7 +597,7 @@ class IbsFile(object):
                 raise InternalError('Bad tag {}.'.format(tag))
 
         self._models[-1].ramp = ramp
-            
+
     def _load_waveform(self, tokens):
         waveform = Waveform()
 
@@ -731,6 +732,39 @@ def _load_4_columns(data):
         (v1.value, v2.value, v3.value, v4.value)
         for _, _, v1, _, v2, _, v3, _, v4 in data[0]
     ]
+
+
+def load_numerical(string):
+    """Convert given string to a Decimal value.
+
+    """
+
+    mo = re.match(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)', string)
+
+    if not mo:
+        raise Error('Expected a numerical string, but got {}.'.format(string))
+
+    value = Decimal(mo.group(1))
+    suffix = mo.group(3)
+
+    if suffix:
+        try:
+            value *= {
+                'T': Decimal('1e12'),
+                'G': Decimal('1e9'),
+                'M': Decimal('1e6'),
+                'k': Decimal('1e3'),
+                'm': Decimal('1e-3'),
+                'u': Decimal('1e-6'),
+                'n': Decimal('1e-9'),
+                'p': Decimal('1e-12'),
+                'f': Decimal('1e-15')
+            }[suffix]
+        except KeyError:
+            # Ignore unit errors.
+            pass
+
+    return value
 
 
 def load_file(filename):
