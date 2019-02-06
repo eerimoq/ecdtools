@@ -1,3 +1,6 @@
+|buildstatus|_
+|coverage|_
+
 About
 =====
 
@@ -28,5 +31,11 @@ Contributing
       make test
 
 #. Create a pull request.
+
+.. |buildstatus| image:: https://travis-ci.org/eerimoq/ecdtools.svg?branch=master
+.. _buildstatus: https://travis-ci.org/eerimoq/ecdtools
+
+.. |coverage| image:: https://coveralls.io/repos/github/eerimoq/ecdtools/badge.svg?branch=master
+.. _coverage: https://coveralls.io/github/eerimoq/ecdtools
 
 .. _IBIS: http://ibis.org
