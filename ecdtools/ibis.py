@@ -461,6 +461,27 @@ class IbsFile(object):
             else:
                 LOGGER.debug('Unsupported keyword %s.', item[1].value)
 
+    def get_model_by_name(self, name):
+        """Get the model named `name`.
+
+        """
+
+        for model in self._models:
+            if model.name == name:
+                return model
+
+        raise Error('Expected model name {}, but got {}.'.format(
+            format_or(self.model_names),
+            name))
+
+    @property
+    def model_names(self):
+        """A list of all model names.
+
+        """
+
+        return sorted([model.name for model in self._models])
+
     def _load_component(self, tokens):
         component = Component()
         component.name = tokens[0][1][1].value
@@ -797,3 +818,15 @@ def load_file(filename):
         string = fin.read()
 
     return IbsFile(string)
+
+
+def format_or(items):
+    items = [str(item) for item in items]
+
+    if len(items) == 0:
+        return ''
+    elif len(items) == 1:
+        return items[0]
+    else:
+        return '{} or {}'.format(', '.join(items[:-1]),
+                                 items[-1])
