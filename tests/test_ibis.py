@@ -161,9 +161,13 @@ class IbisTest(unittest.TestCase):
                 ('10v', '120uA', '90uA', '150uA')
             ])
         self.assertEqual(ibis_file.models[0].ramp.dv_dt_r,
-                         ('2.0/0.50n', '2.0/0.75n', '2.0/0.35n'))
+                         (('2.0', '0.50n'),
+                          ('2.0', '0.75n'),
+                          ('2.0', '0.35n')))
         self.assertEqual(ibis_file.models[0].ramp.dv_dt_f,
-                         ('2.0/0.50n', '2.0/0.75n', '2.0/0.35n'))
+                         (('2.0', '0.50n'),
+                          ('2.0', '0.75n'),
+                          ('2.0', '0.35n')))
         self.assertEqual(ibis_file.models[0].ramp.r_load,
                          '500')
         self.assertEqual(ibis_file.models[0].falling_waveforms, [])
@@ -285,13 +289,14 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(len(ibis_file.models[11].power_clamp), 58)
         self.assertEqual(len(ibis_file.models[11].pullup), 100)
         self.assertEqual(len(ibis_file.models[11].pulldown), 100)
-
-        self.assertEqual(
-            ibis_file.models[11].ramp.dv_dt_r,
-            ('0.950146V/0.229176ns', '0.891184V/0.260292ns', '1.0311V/0.221583ns'))
-        self.assertEqual(
-            ibis_file.models[11].ramp.dv_dt_f,
-            ('0.94062V/0.319408ns', '0.89298V/0.416034ns', '1.00716V/0.284201ns'))
+        self.assertEqual(ibis_file.models[11].ramp.dv_dt_r,
+                         (('0.950146V', '0.229176ns'),
+                          ('0.891184V', '0.260292ns'),
+                          ('1.0311V', '0.221583ns')))
+        self.assertEqual(ibis_file.models[11].ramp.dv_dt_f,
+                         (('0.94062V', '0.319408ns'),
+                          ('0.89298V', '0.416034ns'),
+                          ('1.00716V', '0.284201ns')))
         self.assertEqual(ibis_file.models[11].ramp.r_load, '50')
 
         # Falling waveforms.

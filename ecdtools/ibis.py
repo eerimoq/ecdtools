@@ -604,9 +604,13 @@ class IbsFile(object):
                     data)
 
                 if name == 'dV/dt_r':
-                    ramp.dv_dt_r = (typical, minimum, maximum)
+                    ramp.dv_dt_r = (_load_ramp_value(typical),
+                                    _load_ramp_value(minimum),
+                                    _load_ramp_value(maximum))
                 elif name == 'dV/dt_f':
-                    ramp.dv_dt_f = (typical, minimum, maximum)
+                    ramp.dv_dt_f = (_load_ramp_value(typical),
+                                    _load_ramp_value(minimum),
+                                    _load_ramp_value(maximum))
                 else:
                     LOGGER.debug('Unsupported [Ramp] sub-parameter %s.', name)
             elif tag == 'NumericalSubParameter':
@@ -756,6 +760,14 @@ def _load_4_columns(data):
         (v1.value, v2.value, v3.value, v4.value)
         for _, _, v1, _, v2, _, v3, _, v4 in data[0]
     ]
+
+
+def _load_ramp_value(data):
+    if data != 'NA':
+        dv, dt = data.split('/')
+        data = (dv, dt)
+
+    return data
 
 
 def split_numerical(string):
