@@ -20,6 +20,20 @@ __version__ = '0.1.0'
 
 LOGGER = logging.getLogger(__name__)
 
+RE_NUMERICAL = re.compile(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)(\w*)')
+
+SUFFIX_TO_VALUE = {
+    'T': Decimal('1e12'),
+    'G': Decimal('1e9'),
+    'M': Decimal('1e6'),
+    'k': Decimal('1e3'),
+    'm': Decimal('1e-3'),
+    'u': Decimal('1e-6'),
+    'n': Decimal('1e-9'),
+    'p': Decimal('1e-12'),
+    'f': Decimal('1e-15')
+}
+
 
 class Error(Exception):
     pass
@@ -612,15 +626,16 @@ class IbsFile(object):
                                     _load_ramp_value(minimum),
                                     _load_ramp_value(maximum))
                 else:
-                    LOGGER.debug('Unsupported [Ramp] sub-parameter %s.', name)
+                    raise Error('Invalid [Ramp] sub-parameter {}.'.format(name))
             elif tag == 'NumericalSubParameter':
                 name, value = _load_numerical_sub_parameter(data)
 
                 if name == 'R_load':
                     ramp.r_load = value
                 else:
-                    LOGGER.debug('Unsupported [Ramp] numerical sub-parameter %s.',
-                                 name)
+                    raise Error(
+                        'Invalid [Ramp] numerical sub-parameter {}.'.format(
+                            name))
             else:
                 raise InternalError('Bad tag {}.'.format(tag))
 
@@ -778,14 +793,14 @@ def split_numerical(string):
 
     """
 
-    mo = re.match(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)(\w*)', string)
+    mo = RE_NUMERICAL.match(string)
 
     if not mo:
         raise Error('Expected a numerical string, but got {}.'.format(string))
 
     number, _, suffix, unit = mo.groups()
 
-    if suffix not in ['T', 'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f']:
+    if suffix not in SUFFIX_TO_VALUE:
         unit = suffix + unit
         suffix = ''
 
@@ -805,17 +820,7 @@ def convert_numerical(string):
     value = Decimal(number)
 
     if suffix:
-        value *= {
-            'T': Decimal('1e12'),
-            'G': Decimal('1e9'),
-            'M': Decimal('1e6'),
-            'k': Decimal('1e3'),
-            'm': Decimal('1e-3'),
-            'u': Decimal('1e-6'),
-            'n': Decimal('1e-9'),
-            'p': Decimal('1e-12'),
-            'f': Decimal('1e-15')
-        }[suffix]
+        value *= SUFFIX_TO_VALUE[suffix]
 
     return value
 
