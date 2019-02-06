@@ -350,6 +350,25 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis.load_numerical('2.123E+5'), Decimal('2.123e5'))
         self.assertEqual(ibis.load_numerical('1.1Ohm'), Decimal('1.1'))
         self.assertEqual(ibis.load_numerical('1.1kOhm'), Decimal('1.1e3'))
+        self.assertEqual(ibis.load_numerical('5.1e-3V'), Decimal('0.0051'))
+
+    def test_split_numerical(self):
+        self.assertEqual(ibis.split_numerical('1.1T'), ('1.1', 'T', ''))
+        self.assertEqual(ibis.split_numerical('1.1G'), ('1.1', 'G', ''))
+        self.assertEqual(ibis.split_numerical('1.1M'), ('1.1', 'M', ''))
+        self.assertEqual(ibis.split_numerical('1.1k'), ('1.1', 'k', ''))
+        self.assertEqual(ibis.split_numerical('1.1'),  ('1.1', '', ''))
+        self.assertEqual(ibis.split_numerical('1.1m'), ('1.1', 'm', ''))
+        self.assertEqual(ibis.split_numerical('1.1u'), ('1.1', 'u', ''))
+        self.assertEqual(ibis.split_numerical('1.1n'), ('1.1', 'n', ''))
+        self.assertEqual(ibis.split_numerical('1.1p'), ('1.1', 'p', ''))
+        self.assertEqual(ibis.split_numerical('1.1f'), ('1.1', 'f', ''))
+        self.assertEqual(ibis.split_numerical('2.123E-5'), ('2.123E-5', '', ''))
+        self.assertEqual(ibis.split_numerical('2.123e5'), ('2.123e5', '', ''))
+        self.assertEqual(ibis.split_numerical('2.123E+5'), ('2.123E+5', '', ''))
+        self.assertEqual(ibis.split_numerical('1.1Ohm'), ('1.1', '', 'Ohm'))
+        self.assertEqual(ibis.split_numerical('1.1kOhm'), ('1.1', 'k', 'Ohm'))
+        self.assertEqual(ibis.split_numerical('5.1e-3V'), ('5.1e-3', '', 'V'))
 
     def test_load_pybis_files(self):
         filenames = [

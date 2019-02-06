@@ -734,35 +734,46 @@ def _load_4_columns(data):
     ]
 
 
+def split_numerical(string):
+    """Split given string into a number, suffix and unit tuple.
+
+    """
+
+    mo = re.match(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)(\w*)', string)
+
+    if not mo:
+        raise Error('Expected a numerical string, but got {}.'.format(string))
+
+    number, _, suffix, unit = mo.groups()
+
+    if suffix not in ['T', 'G', 'M', 'k', 'm', 'u', 'n', 'p', 'f']:
+        unit = suffix + unit
+        suffix = ''
+
+    return number, suffix, unit
+
+
 def load_numerical(string):
     """Convert given string to a Decimal value.
 
     """
 
-    mo = re.match(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)', string)
+    number, suffix, _ = split_numerical(string)
 
-    if not mo:
-        raise Error('Expected a numerical string, but got {}.'.format(string))
-
-    value = Decimal(mo.group(1))
-    suffix = mo.group(3)
+    value = Decimal(number)
 
     if suffix:
-        try:
-            value *= {
-                'T': Decimal('1e12'),
-                'G': Decimal('1e9'),
-                'M': Decimal('1e6'),
-                'k': Decimal('1e3'),
-                'm': Decimal('1e-3'),
-                'u': Decimal('1e-6'),
-                'n': Decimal('1e-9'),
-                'p': Decimal('1e-12'),
-                'f': Decimal('1e-15')
-            }[suffix]
-        except KeyError:
-            # Ignore unit errors.
-            pass
+        value *= {
+            'T': Decimal('1e12'),
+            'G': Decimal('1e9'),
+            'M': Decimal('1e6'),
+            'k': Decimal('1e3'),
+            'm': Decimal('1e-3'),
+            'u': Decimal('1e-6'),
+            'n': Decimal('1e-9'),
+            'p': Decimal('1e-12'),
+            'f': Decimal('1e-15')
+        }[suffix]
 
     return value
 
