@@ -753,7 +753,7 @@ def split_numerical(string):
     return number, suffix, unit
 
 
-def load_numerical(string):
+def convert_numerical(string):
     """Convert given string to a Decimal value.
 
     """
