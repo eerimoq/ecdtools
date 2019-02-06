@@ -33,10 +33,6 @@ In this example we load an IBS-file and access some of its content.
    >>> model.model_type
    'Input'
    >>> pprint(model.gnd_clamp)
-   Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
-   NameError: name 'pprint' is not defined
-   >>> pprint(model.gnd_clamp)
    [('-2.0000e+00', '-6.158e+17', 'NA', 'NA'),
     ('-1.9000e+00', '-1.697e+16', 'NA', 'NA'),
     ('-1.8000e+00', '-4.679e+14', 'NA', 'NA'),
