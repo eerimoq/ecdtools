@@ -81,6 +81,13 @@ class Component(object):
         self.pins = []
 
 
+class AddSubmodel(object):
+
+    def __init__(self):
+        self.submodel = None
+        self.submodel_mode = None
+
+
 class Ramp(object):
 
     def __init__(self):
@@ -126,6 +133,23 @@ class Model(object):
         self.ramp = None
         self.falling_waveforms = []
         self.rising_waveforms = []
+        self.add_submodel = []
+
+
+class SubmodelSpec(object):
+
+    def __init__(self):
+        self.v_trigger_r = TypMinMax()
+        self.v_trigger_f = TypMinMax()
+        self.off_delay = TypMinMax()
+
+
+class Submodel(object):
+
+    def __init__(self):
+        self.name = None
+        self.submodel_type = None
+        self.submodel_spec = None
 
 
 KEYWORDS = set([
@@ -159,6 +183,7 @@ KEYWORDS = set([
     '[falling waveform]',
     '[rising waveform]',
     '[submodel]',
+    '[submodel spec]',
     '[end]'
 ])
 
@@ -359,6 +384,9 @@ class Parser(textparser.Parser):
         submodel = Sequence(nls, '[submodel]', 'WS', 'WORD',
                             OneOrMore(sub_parameter))
 
+        submodel_spec = Sequence(nls, '[submodel spec]',
+                                 OneOrMore(sub_parameter_typ_min_max))
+
         unknown_keyword = Sequence(nls, 'KEYWORD', any_until_keyword)
 
         end = Sequence(nls, '[end]')
@@ -393,6 +421,7 @@ class Parser(textparser.Parser):
                                                falling_waveform,
                                                rising_waveform,
                                                submodel,
+                                               submodel_spec,
                                                unknown_keyword,
                                                end)))
 
@@ -415,6 +444,7 @@ class IbsFile(object):
         self._copyright = None
         self._components = []
         self._models = []
+        self._submodels = []
         self._transform = transform
 
         string = string.replace('\r', '')
@@ -451,6 +481,8 @@ class IbsFile(object):
                 self._load_pin(data)
             elif keyword == '[model]':
                 self._load_model(data)
+            elif keyword == '[add submodel]':
+                self._load_add_submodel(data)
             elif keyword == '[temperature range]':
                 self._load_temperature_range(data)
             elif keyword == '[voltage range]':
@@ -471,6 +503,10 @@ class IbsFile(object):
             elif keyword == '[rising waveform]':
                 waveform = self._load_waveform(data)
                 self._models[-1].rising_waveforms.append(waveform)
+            elif keyword == '[submodel]':
+                self._load_submodel(data)
+            elif keyword == '[submodel spec]':
+                self._load_submodel_spec(data)
             elif keyword == '[end]':
                 pass
             else:
@@ -621,6 +657,13 @@ class IbsFile(object):
 
         self._models.append(model)
 
+    def _load_add_submodel(self, tokens):
+        for _, name, _, value in tokens[0]:
+            add_submodel = AddSubmodel()
+            add_submodel.submodel = name.value
+            add_submodel.submodel_mode = value.value
+            self._models[-1].add_submodel.append(add_submodel)
+
     def _load_temperature_range(self, tokens):
         self._models[-1].temperature_range.typical = self._load_numerical(tokens[1])
         self._models[-1].temperature_range.minimum = self._load_numerical(tokens[5])
@@ -693,6 +736,56 @@ class IbsFile(object):
 
         return waveform
 
+    def _load_submodel(self, tokens):
+        submodel = Submodel()
+        submodel.name = tokens[1].value
+
+        for tag, data in tokens[2]:
+            if tag == 'SubParameter':
+                name, value = self._load_sub_parameter(data)
+
+                if name == 'Submodel_type':
+                    submodel.submodel_type = value
+                else:
+                    LOGGER.debug('Unsupported [Submodel] sub-parameter %s.',
+                                 name)
+            else:
+                raise InternalError('Bad tag {}.'.format(tag))
+
+        self._submodels.append(submodel)
+
+    def _load_submodel_spec(self, tokens):
+        submodel_spec = SubmodelSpec()
+
+        for tag, data in tokens[0]:
+            if tag == 'SubParameterTypMinMax':
+                (name,
+                 typical,
+                 minimum,
+                 maximum) = self._load_numerical_sub_parameter_typ_min_max(
+                     data)
+
+                if name == 'V_trigger_r':
+                    submodel_spec.v_trigger_r.typical = typical
+                    submodel_spec.v_trigger_r.minimum = minimum
+                    submodel_spec.v_trigger_r.maximum = maximum
+                elif name == 'V_trigger_f':
+                    submodel_spec.v_trigger_f.typical = typical
+                    submodel_spec.v_trigger_f.minimum = minimum
+                    submodel_spec.v_trigger_f.maximum = maximum
+                elif name == 'Off_delay':
+                    submodel_spec.off_delay.typical = typical
+                    submodel_spec.off_delay.minimum = minimum
+                    submodel_spec.off_delay.maximum = maximum
+                else:
+                    LOGGER.debug(
+                        'Unsupported [Submodel spec] sub-parameter %s.',
+                        name)
+            else:
+                raise InternalError('Bad tag {}.'.format(tag))
+
+        self._submodels[-1].submodel_spec = submodel_spec
+
     def _load_numerical(self, data):
         value = data.value
 
@@ -719,12 +812,16 @@ class IbsFile(object):
     def _load_sub_parameter_typ_min_max(self, data):
         return data[1].value, data[3].value, data[5].value, data[7].value
 
+    def _load_numerical_sub_parameter_typ_min_max(self, data):
+        return (data[1].value,
+                self._load_numerical(data[3]),
+                self._load_numerical(data[5]),
+                self._load_numerical(data[7]))
 
     def _load_string(self, data):
         return ''.join([
             text.value for _, text in data[0][1:]
         ])
-
 
     def _load_4_columns(self, data):
         return [
@@ -829,6 +926,14 @@ class IbsFile(object):
         """
 
         return self._models
+
+    @property
+    def submodels(self):
+        """A list of all submodels.
+
+        """
+
+        return self._submodels
 
 
 def split_numerical(string):

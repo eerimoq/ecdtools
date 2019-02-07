@@ -173,6 +173,29 @@ class IbisTest(unittest.TestCase):
                          '500')
         self.assertEqual(ibis_file.models[0].falling_waveforms, [])
         self.assertEqual(ibis_file.models[0].rising_waveforms, [])
+        self.assertEqual(ibis_file.models[0].add_submodel[0].submodel,
+                         'BUS_HOLD')
+        self.assertEqual(ibis_file.models[0].add_submodel[0].submodel_mode,
+                         'All')
+
+        # Submodels.
+        self.assertEqual(len(ibis_file.submodels), 1)
+
+        # First (and only) submodel.
+        self.assertEqual(ibis_file.submodels[0].name, 'BUS_HOLD')
+        self.assertEqual(ibis_file.submodels[0].submodel_type, 'Bus_hold')
+
+        submodel_spec = ibis_file.submodels[0].submodel_spec
+
+        self.assertEqual(submodel_spec.v_trigger_r.typical, '3.1')
+        self.assertEqual(submodel_spec.v_trigger_r.minimum, '2.6')
+        self.assertEqual(submodel_spec.v_trigger_r.maximum, '4.6')
+        self.assertEqual(submodel_spec.v_trigger_f.typical, '1.3')
+        self.assertEqual(submodel_spec.v_trigger_f.minimum, '1.2')
+        self.assertEqual(submodel_spec.v_trigger_f.maximum, '1.4')
+        self.assertEqual(submodel_spec.off_delay.typical, None)
+        self.assertEqual(submodel_spec.off_delay.minimum, None)
+        self.assertEqual(submodel_spec.off_delay.maximum, None)
 
     def test_load_bushold_transform(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs',
