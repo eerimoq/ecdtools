@@ -404,10 +404,10 @@ class IbsFile(object):
 
     """
 
-    def __init__(self, string):
-        self._version = None
+    def __init__(self, string, convert_numerical_to_decimal):
+        self._ibis_version = None
         self._file_name = None
-        self._file_rev = None
+        self._file_revision = None
         self._date = None
         self._source = None
         self._notes = None
@@ -415,12 +415,13 @@ class IbsFile(object):
         self._copyright = None
         self._components = []
         self._models = []
+        self._convert_numerical_to_decimal = convert_numerical_to_decimal
 
         string = string.replace('\r', '')
         string = re.sub(r'[ \t]+\n', '\n', string)
         tokens = Parser().parse(string, token_tree=True, match_sof=True)
 
-        self._version = tokens[0][5].value
+        self._ibis_version = tokens[0][5].value
 
         for item in tokens[1]:
             keyword = item[1].kind
@@ -429,21 +430,21 @@ class IbsFile(object):
             if keyword == '[file name]':
                 self._file_name = data[1].value
             elif keyword == '[file rev]':
-                self._file_rev = data[1].value
+                self._file_revision = data[1].value
             elif keyword == '[date]':
-                self._date = _load_string(data)
+                self._date = self._load_string(data)
             elif keyword == '[source]':
-                self._source = _load_string(data)
+                self._source = self._load_string(data)
             elif keyword == '[notes]':
-                self._notes = _load_string(data)
+                self._notes = self._load_string(data)
             elif keyword == '[disclaimer]':
-                self._disclaimer = _load_string(data)
+                self._disclaimer = self._load_string(data)
             elif keyword == '[copyright]':
-                self._copyright = _load_string(data)
+                self._copyright = self._load_string(data)
             elif keyword == '[component]':
                 self._load_component(data)
             elif keyword == '[manufacturer]':
-                self._components[-1].manufacturer = _load_string(data)
+                self._components[-1].manufacturer = self._load_string(data)
             elif keyword == '[package]':
                 self._load_package(data)
             elif keyword == '[pin]':
@@ -455,13 +456,13 @@ class IbsFile(object):
             elif keyword == '[voltage range]':
                 self._load_voltage_range(data)
             elif keyword == '[gnd clamp]':
-                self._models[-1].gnd_clamp = _load_4_columns(data)
+                self._models[-1].gnd_clamp = self._load_4_columns(data)
             elif keyword == '[power clamp]':
-                self._models[-1].power_clamp = _load_4_columns(data)
+                self._models[-1].power_clamp = self._load_4_columns(data)
             elif keyword == '[pullup]':
-                self._models[-1].pullup = _load_4_columns(data)
+                self._models[-1].pullup = self._load_4_columns(data)
             elif keyword == '[pulldown]':
-                self._models[-1].pulldown = _load_4_columns(data)
+                self._models[-1].pulldown = self._load_4_columns(data)
             elif keyword == '[ramp]':
                 self._load_ramp(data)
             elif keyword == '[falling waveform]':
@@ -475,6 +476,35 @@ class IbsFile(object):
             else:
                 LOGGER.debug('Unsupported keyword %s.', item[1].value)
 
+    @property
+    def component_names(self):
+        """A list of all component names.
+
+        """
+
+        return sorted([component.name for component in self._components])
+
+    @property
+    def model_names(self):
+        """A list of all model names.
+
+        """
+
+        return sorted([model.name for model in self._models])
+
+    def get_component_by_name(self, name):
+        """Get the component named `name`.
+
+        """
+
+        for component in self._components:
+            if component.name == name:
+                return component
+
+        raise Error('Expected component name {}, but got {}.'.format(
+            format_or(self.component_names),
+            name))
+
     def get_model_by_name(self, name):
         """Get the model named `name`.
 
@@ -487,14 +517,6 @@ class IbsFile(object):
         raise Error('Expected model name {}, but got {}.'.format(
             format_or(self.model_names),
             name))
-
-    @property
-    def model_names(self):
-        """A list of all model names.
-
-        """
-
-        return sorted([model.name for model in self._models])
 
     def _load_component(self, tokens):
         component = Component()
@@ -516,17 +538,17 @@ class IbsFile(object):
 
         for _, sub_param, _, typical, _, minimum, _, maximum in tokens[0]:
             if sub_param.value == 'R_pkg':
-                package.r_pkg.typical = typical.value
-                package.r_pkg.minimum = minimum.value
-                package.r_pkg.maximum = maximum.value
+                package.r_pkg.typical = self._load_numerical(typical)
+                package.r_pkg.minimum = self._load_numerical(minimum)
+                package.r_pkg.maximum = self._load_numerical(maximum)
             elif sub_param.value == 'L_pkg':
-                package.l_pkg.typical = typical.value
-                package.l_pkg.minimum = minimum.value
-                package.l_pkg.maximum = maximum.value
+                package.l_pkg.typical = self._load_numerical(typical)
+                package.l_pkg.minimum = self._load_numerical(minimum)
+                package.l_pkg.maximum = self._load_numerical(maximum)
             elif sub_param.value == 'C_pkg':
-                package.c_pkg.typical = typical.value
-                package.c_pkg.minimum = minimum.value
-                package.c_pkg.maximum = maximum.value
+                package.c_pkg.typical = self._load_numerical(typical)
+                package.c_pkg.minimum = self._load_numerical(minimum)
+                package.c_pkg.maximum = self._load_numerical(maximum)
             else:
                 raise Error('Invalid [Package] sub-parameter %s.',
                             sub_param.value)
@@ -541,9 +563,9 @@ class IbsFile(object):
                 pin.name = data[2].value
                 pin.signal_name = data[4].value
                 pin.model_name = data[6].value
-                pin.r_pin = data[8].value
-                pin.l_pin = data[10].value
-                pin.c_pin = data[12].value
+                pin.r_pin = self._load_numerical(data[8])
+                pin.l_pin = self._load_numerical(data[10])
+                pin.c_pin = self._load_numerical(data[12])
             elif tag == 'Triple':
                 pin.name = data[2].value
                 pin.signal_name = data[4].value
@@ -559,7 +581,7 @@ class IbsFile(object):
 
         for tag, data in tokens[2]:
             if tag == 'SubParameter':
-                name, value = _load_sub_parameter(data)
+                name, value = self._load_sub_parameter(data)
 
                 if name == 'Model_type':
                     model.model_type = value
@@ -570,7 +592,7 @@ class IbsFile(object):
                 else:
                     LOGGER.debug('Unsupported [Model] sub-parameter %s.', name)
             elif tag == 'NumericalSubParameter':
-                name, value = _load_numerical_sub_parameter(data)
+                name, value = self._load_numerical_sub_parameter(data)
 
                 if name == 'Vinl':
                     model.vinl = value
@@ -589,9 +611,9 @@ class IbsFile(object):
                                  name)
             elif tag == 'Quad':
                 if data[1].value =='C_comp':
-                    model.c_comp.typical = data[3].value
-                    model.c_comp.minimum = data[5].value
-                    model.c_comp.maximum = data[7].value
+                    model.c_comp.typical = self._load_numerical(data[3])
+                    model.c_comp.minimum = self._load_numerical(data[5])
+                    model.c_comp.maximum = self._load_numerical(data[7])
                 else:
                     LOGGER.debug('Unsupported [Model] data %s.', data[1].value)
             else:
@@ -600,35 +622,35 @@ class IbsFile(object):
         self._models.append(model)
 
     def _load_temperature_range(self, tokens):
-        self._models[-1].temperature_range.typical = tokens[1].value
-        self._models[-1].temperature_range.minimum = tokens[5].value
-        self._models[-1].temperature_range.maximum = tokens[3].value
+        self._models[-1].temperature_range.typical = self._load_numerical(tokens[1])
+        self._models[-1].temperature_range.minimum = self._load_numerical(tokens[5])
+        self._models[-1].temperature_range.maximum = self._load_numerical(tokens[3])
 
     def _load_voltage_range(self, tokens):
-        self._models[-1].voltage_range.typical = tokens[1].value
-        self._models[-1].voltage_range.minimum = tokens[3].value
-        self._models[-1].voltage_range.maximum = tokens[5].value
+        self._models[-1].voltage_range.typical = self._load_numerical(tokens[1])
+        self._models[-1].voltage_range.minimum = self._load_numerical(tokens[3])
+        self._models[-1].voltage_range.maximum = self._load_numerical(tokens[5])
 
     def _load_ramp(self, tokens):
         ramp = Ramp()
 
         for tag, data in tokens[0]:
             if tag == 'SubParameterTypMinMax':
-                name, typical, minimum, maximum = _load_sub_parameter_typ_min_max(
+                name, typical, minimum, maximum = self._load_sub_parameter_typ_min_max(
                     data)
 
                 if name == 'dV/dt_r':
-                    ramp.dv_dt_r = (_load_ramp_value(typical),
-                                    _load_ramp_value(minimum),
-                                    _load_ramp_value(maximum))
+                    ramp.dv_dt_r = (self._load_ramp_value(typical),
+                                    self._load_ramp_value(minimum),
+                                    self._load_ramp_value(maximum))
                 elif name == 'dV/dt_f':
-                    ramp.dv_dt_f = (_load_ramp_value(typical),
-                                    _load_ramp_value(minimum),
-                                    _load_ramp_value(maximum))
+                    ramp.dv_dt_f = (self._load_ramp_value(typical),
+                                    self._load_ramp_value(minimum),
+                                    self._load_ramp_value(maximum))
                 else:
                     raise Error('Invalid [Ramp] sub-parameter {}.'.format(name))
             elif tag == 'NumericalSubParameter':
-                name, value = _load_numerical_sub_parameter(data)
+                name, value = self._load_numerical_sub_parameter(data)
 
                 if name == 'R_load':
                     ramp.r_load = value
@@ -646,7 +668,7 @@ class IbsFile(object):
 
         for tag, data in tokens[0]:
             if tag == 'NumericalSubParameter':
-                name, value = _load_numerical_sub_parameter(data)
+                name, value = self._load_numerical_sub_parameter(data)
 
                 if name == 'R_fixture':
                     waveform.r_fixture = value
@@ -662,22 +684,74 @@ class IbsFile(object):
                         'sub-parameter %s.',
                         name)
             elif tag == 'TableEntry':
-                waveform.table.samples.append((data[2].value,
-                                               data[4].value,
-                                               data[6].value,
-                                               data[8].value))
+                waveform.table.samples.append((self._load_numerical(data[2]),
+                                               self._load_numerical(data[4]),
+                                               self._load_numerical(data[6]),
+                                               self._load_numerical(data[8])))
             else:
                 raise InternalError('Bad tag {}.'.format(tag))
 
         return waveform
 
+    def _load_numerical(self, data):
+        value = data.value
+
+        if value != 'NA':
+            if self._convert_numerical_to_decimal:
+                value = convert_numerical(value)
+
+        return value
+
+    def _load_sub_parameter(self, data):
+        return data[1].value, data[3].value
+
+
+    def _load_numerical_sub_parameter(self, data):
+        if self._convert_numerical_to_decimal:
+            value = self._load_numerical(data[5])
+        else:
+            value = data[5].value
+
+        return data[1].value, value
+
+    def _load_sub_parameter_typ_min_max(self, data):
+        return data[1].value, data[3].value, data[5].value, data[7].value
+
+
+    def _load_string(self, data):
+        return ''.join([
+            text.value for _, text in data[0][1:]
+        ])
+
+
+    def _load_4_columns(self, data):
+        return [
+            (self._load_numerical(v1),
+             self._load_numerical(v2),
+             self._load_numerical(v3),
+             self._load_numerical(v4))
+            for _, _, v1, _, v2, _, v3, _, v4 in data[0]
+        ]
+
+    def _load_ramp_value(self, data):
+        if data != 'NA':
+            dv, dt = data.split('/')
+
+            if self._convert_numerical_to_decimal:
+                dv = convert_numerical(dv)
+                dt = convert_numerical(dt)
+
+            data = (dv, dt)
+
+        return data
+
     @property
-    def version(self):
+    def ibis_version(self):
         """The IBIS version string.
 
         """
 
-        return self._version
+        return self._ibis_version
 
     @property
     def file_name(self):
@@ -688,12 +762,12 @@ class IbsFile(object):
         return self._file_name
 
     @property
-    def file_rev(self):
+    def file_revision(self):
         """The file revision string.
 
         """
 
-        return self._file_rev
+        return self._file_revision
 
     @property
     def date(self):
@@ -752,39 +826,6 @@ class IbsFile(object):
         return self._models
 
 
-def _load_sub_parameter(data):
-    return data[1].value, data[3].value
-
-
-def _load_numerical_sub_parameter(data):
-    return data[1].value, data[5].value
-
-
-def _load_sub_parameter_typ_min_max(data):
-    return data[1].value, data[3].value, data[5].value, data[7].value
-
-
-def _load_string(data):
-    return ''.join([
-        text.value for _, text in data[0][1:]
-    ])
-
-
-def _load_4_columns(data):
-    return [
-        (v1.value, v2.value, v3.value, v4.value)
-        for _, _, v1, _, v2, _, v3, _, v4 in data[0]
-    ]
-
-
-def _load_ramp_value(data):
-    if data != 'NA':
-        dv, dt = data.split('/')
-        data = (dv, dt)
-
-    return data
-
-
 def split_numerical(string):
     """Split given string into a number, suffix and unit tuple.
 
@@ -825,16 +866,19 @@ def convert_numerical(string):
     return value
 
 
-def load_file(filename):
+def load_file(filename, convert_numerical_to_decimal=False):
     """Load given IBIS file and return an IbsFile object with its
     contents.
+
+    Give `convert_numerical_to_decimal` as ``True`` to convert all
+    numerical values from strings to decimal.Decimal.
 
     """
 
     with open(filename, 'r') as fin:
         string = fin.read()
 
-    return IbsFile(string)
+    return IbsFile(string, convert_numerical_to_decimal)
 
 
 def format_or(items):

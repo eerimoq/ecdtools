@@ -2,6 +2,7 @@ import logging
 import unittest
 from decimal import Decimal
 
+import ecdtools
 from ecdtools import ibis
 
 
@@ -13,9 +14,9 @@ class IbisTest(unittest.TestCase):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs')
 
         # General information.
-        self.assertEqual(ibis_file.version, '3.2')
+        self.assertEqual(ibis_file.ibis_version, '3.2')
         self.assertEqual(ibis_file.file_name, 'bushold.ibs')
-        self.assertEqual(ibis_file.file_rev, '0.2')
+        self.assertEqual(ibis_file.file_revision, '0.2')
         self.assertEqual(ibis_file.date, 'June 24, 1998')
         self.assertEqual(ibis_file.source, 'Artifical Data')
         self.assertEqual(ibis_file.notes, 'This data is a sample, only.')
@@ -173,13 +174,178 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis_file.models[0].falling_waveforms, [])
         self.assertEqual(ibis_file.models[0].rising_waveforms, [])
 
+    def test_load_bushold_convert_numerical_to_decimal(self):
+        ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs',
+                                   convert_numerical_to_decimal=True)
+
+        # General information.
+        self.assertEqual(ibis_file.ibis_version, '3.2')
+        self.assertEqual(ibis_file.file_name, 'bushold.ibs')
+        self.assertEqual(ibis_file.file_revision, '0.2')
+        self.assertEqual(ibis_file.date, 'June 24, 1998')
+        self.assertEqual(ibis_file.source, 'Artifical Data')
+        self.assertEqual(ibis_file.notes, 'This data is a sample, only.')
+        self.assertEqual(
+            ibis_file.disclaimer,
+            'This information is for modeling purposes and is not')
+        self.assertEqual(ibis_file.copyright, 'None - public sample')
+
+        # Components.
+        self.assertEqual(len(ibis_file.components), 1)
+
+        # First (and only) component.
+        component = ibis_file.components[0]
+
+        self.assertEqual(component.name, 'BUS-HOLD-SAMPLE')
+        self.assertEqual(component.si_location, None)
+        self.assertEqual(component.timing_location, None)
+        self.assertEqual(component.manufacturer, 'None')
+        self.assertEqual(component.package.r_pkg.typical, Decimal('200e-3'))
+        self.assertEqual(component.package.r_pkg.minimum, Decimal('100e-3'))
+        self.assertEqual(component.package.r_pkg.maximum, Decimal('300e-3'))
+        self.assertEqual(component.package.l_pkg.typical, Decimal('4.32e-9'))
+        self.assertEqual(component.package.l_pkg.minimum, Decimal('3.34e-9'))
+        self.assertEqual(component.package.l_pkg.maximum, Decimal('5.30e-9'))
+        self.assertEqual(component.package.c_pkg.typical, Decimal('0.38e-12'))
+        self.assertEqual(component.package.c_pkg.minimum, Decimal('0.33e-12'))
+        self.assertEqual(component.package.c_pkg.maximum, Decimal('0.43e-12'))
+        self.assertEqual(len(component.pins), 3)
+        self.assertEqual(component.pins[0].name, '1')
+        self.assertEqual(component.pins[0].signal_name, 'Sample1')
+        self.assertEqual(component.pins[0].model_name, 'TOP_MODEL_BUS_HOLD')
+        self.assertEqual(component.pins[0].r_pin, None)
+        self.assertEqual(component.pins[0].l_pin, None)
+        self.assertEqual(component.pins[0].c_pin, None)
+        self.assertEqual(component.pins[1].name, '12')
+        self.assertEqual(component.pins[1].signal_name, 'GND')
+        self.assertEqual(component.pins[1].model_name, 'GND')
+        self.assertEqual(component.pins[1].r_pin, None)
+        self.assertEqual(component.pins[1].l_pin, None)
+        self.assertEqual(component.pins[1].c_pin, None)
+        self.assertEqual(component.pins[2].name, '24')
+        self.assertEqual(component.pins[2].signal_name, 'VCC')
+        self.assertEqual(component.pins[2].model_name, 'POWER')
+        self.assertEqual(component.pins[2].r_pin, None)
+        self.assertEqual(component.pins[2].l_pin, None)
+        self.assertEqual(component.pins[2].c_pin, None)
+
+        # Models.
+        self.assertEqual(len(ibis_file.models), 1)
+
+        # First (and only) model.
+        self.assertEqual(ibis_file.models[0].name, 'TOP_MODEL_BUS_HOLD')
+        self.assertEqual(ibis_file.models[0].model_type, 'Input')
+        self.assertEqual(ibis_file.models[0].polarity, None)
+        self.assertEqual(ibis_file.models[0].enable, None)
+        self.assertEqual(ibis_file.models[0].vinl, Decimal('0.8'))
+        self.assertEqual(ibis_file.models[0].vinh, Decimal('2.0'))
+        self.assertEqual(ibis_file.models[0].c_comp.typical, Decimal('4e-12'))
+        self.assertEqual(ibis_file.models[0].c_comp.minimum, Decimal('3e-12'))
+        self.assertEqual(ibis_file.models[0].c_comp.maximum, Decimal('5e-12'))
+        self.assertEqual(ibis_file.models[0].vmeas, None)
+        self.assertEqual(ibis_file.models[0].cref, None)
+        self.assertEqual(ibis_file.models[0].vref, None)
+        self.assertEqual(ibis_file.models[0].rref, None)
+        self.assertEqual(ibis_file.models[0].temperature_range.typical, None)
+        self.assertEqual(ibis_file.models[0].temperature_range.minimum, None)
+        self.assertEqual(ibis_file.models[0].temperature_range.maximum, None)
+        self.assertEqual(ibis_file.models[0].voltage_range.typical, Decimal('5.0'))
+        self.assertEqual(ibis_file.models[0].voltage_range.minimum, Decimal('4.5'))
+        self.assertEqual(ibis_file.models[0].voltage_range.maximum, Decimal('5.5'))
+        self.assertEqual(
+            ibis_file.models[0].gnd_clamp,
+            [
+                (Decimal('-2.0000e+00'), Decimal('-6.158e+17'), 'NA', 'NA'),
+                (Decimal('-1.9000e+00'), Decimal('-1.697e+16'), 'NA', 'NA'),
+                (Decimal('-1.8000e+00'), Decimal('-4.679e+14'), 'NA', 'NA'),
+                (Decimal('-1.7000e+00'), Decimal('-1.290e+13'), 'NA', 'NA'),
+                (Decimal('-1.6000e+00'), Decimal('-3.556e+11'), 'NA', 'NA'),
+                (Decimal('-1.5000e+00'), Decimal('-9.802e+09'), 'NA', 'NA'),
+                (Decimal('-1.4000e+00'), Decimal('-2.702e+08'), 'NA', 'NA'),
+                (Decimal('-1.3000e+00'), Decimal('-7.449e+06'), 'NA', 'NA'),
+                (Decimal('-1.2000e+00'), Decimal('-2.053e+05'), 'NA', 'NA'),
+                (Decimal('-1.1000e+00'), Decimal('-5.660e+03'), 'NA', 'NA'),
+                (Decimal('-1.0000e+00'), Decimal('-1.560e+02'), 'NA', 'NA'),
+                (Decimal('-9.0000e-01'), Decimal('-4.308e+00'), 'NA', 'NA'),
+                (Decimal('-8.0000e-01'), Decimal('-1.221e-01'), 'NA', 'NA'),
+                (Decimal('-7.0000e-01'), Decimal('-4.315e-03'), 'NA', 'NA'),
+                (Decimal('-6.0000e-01'), Decimal('-1.715e-04'), 'NA', 'NA'),
+                (Decimal('-5.0000e-01'), Decimal('-4.959e-06'), 'NA', 'NA'),
+                (Decimal('-4.0000e-01'), Decimal('-1.373e-07'), 'NA', 'NA'),
+                (Decimal('-3.0000e-01'), Decimal('-4.075e-09'), 'NA', 'NA'),
+                (Decimal('-2.0000e-01'), Decimal('-3.044e-10'), 'NA', 'NA'),
+                (Decimal('-1.0000e-01'), Decimal('-1.030e-10'), 'NA', 'NA'),
+                (Decimal('0.'), Decimal('0'), 'NA', 'NA'),
+                (Decimal('5'), Decimal('0'), 'NA', 'NA')
+            ])
+        self.assertEqual(
+            ibis_file.models[0].power_clamp,
+            [
+                (Decimal('-2.0000e+00'), Decimal('6.158e+17'), 'NA', 'NA'),
+                (Decimal('-1.9000e+00'), Decimal('1.697e+16'), 'NA', 'NA'),
+                (Decimal('-1.8000e+00'), Decimal('4.679e+14'), 'NA', 'NA'),
+                (Decimal('-1.7000e+00'), Decimal('1.290e+13'), 'NA', 'NA'),
+                (Decimal('-1.6000e+00'), Decimal('3.556e+11'), 'NA', 'NA'),
+                (Decimal('-1.5000e+00'), Decimal('9.802e+09'), 'NA', 'NA'),
+                (Decimal('-1.4000e+00'), Decimal('2.702e+08'), 'NA', 'NA'),
+                (Decimal('-1.3000e+00'), Decimal('7.449e+06'), 'NA', 'NA'),
+                (Decimal('-1.2000e+00'), Decimal('2.053e+05'), 'NA', 'NA'),
+                (Decimal('-1.1000e+00'), Decimal('5.660e+03'), 'NA', 'NA'),
+                (Decimal('-1.0000e+00'), Decimal('1.560e+02'), 'NA', 'NA'),
+                (Decimal('-9.0000e-01'), Decimal('4.308e+00'), 'NA', 'NA'),
+                (Decimal('-8.0000e-01'), Decimal('1.221e-01'), 'NA', 'NA'),
+                (Decimal('-7.0000e-01'), Decimal('4.315e-03'), 'NA', 'NA'),
+                (Decimal('-6.0000e-01'), Decimal('1.715e-04'), 'NA', 'NA'),
+                (Decimal('-5.0000e-01'), Decimal('4.959e-06'), 'NA', 'NA'),
+                (Decimal('-4.0000e-01'), Decimal('1.373e-07'), 'NA', 'NA'),
+                (Decimal('-3.0000e-01'), Decimal('4.075e-09'), 'NA', 'NA'),
+                (Decimal('-2.0000e-01'), Decimal('3.044e-10'), 'NA', 'NA'),
+                (Decimal('-1.0000e-01'), Decimal('1.030e-10'), 'NA', 'NA'),
+                (Decimal('0.'), Decimal('0'), 'NA', 'NA'),
+                (Decimal('5'), Decimal('0'), 'NA', 'NA')
+            ])
+        self.assertEqual(
+            ibis_file.models[0].pullup,
+            [
+                (Decimal('-5'), Decimal('100e-6'), Decimal('80e-6'), Decimal('120e-6')),
+                (Decimal('-1'), Decimal('30e-6'), Decimal('25e-6'), Decimal('40e-6')),
+                (Decimal('0'), Decimal('0'), Decimal('0'), Decimal('0')),
+                (Decimal('1'), Decimal('-30e-6'), Decimal('-25e-6'), Decimal('-40e-6')),
+                (Decimal('3'), Decimal('-50e-6'), Decimal('-45e-6'), Decimal('-50e-6')),
+                (Decimal('5'), Decimal('-100e-6'), Decimal('-80e-6'), Decimal('-120e-6')),
+                (Decimal('10'), Decimal('-120e-6'), Decimal('-90e-6'), Decimal('-150e-6'))
+            ])
+        self.assertEqual(
+            ibis_file.models[0].pulldown,
+            [
+                (Decimal('-5'), Decimal('-100e-6'), Decimal('-80e-6'), Decimal('-120e-6')),
+                (Decimal('-1'), Decimal('-30e-6'), Decimal('-25e-6'), Decimal('-40e-6')),
+                (Decimal('0'), Decimal('0'), Decimal('0'), Decimal('0')),
+                (Decimal('1'), Decimal('30e-6'), Decimal('25e-6'), Decimal('40e-6')),
+                (Decimal('3'), Decimal('50e-6'), Decimal('45e-6'), Decimal('50e-6')),
+                (Decimal('5'), Decimal('100e-6'), Decimal('80e-6'), Decimal('120e-6')),
+                (Decimal('10'), Decimal('120e-6'), Decimal('90e-6'), Decimal('150e-6'))
+            ])
+        self.assertEqual(ibis_file.models[0].ramp.dv_dt_r,
+                         ((Decimal('2.0'), Decimal('0.50e-9')),
+                          (Decimal('2.0'), Decimal('0.75e-9')),
+                          (Decimal('2.0'), Decimal('0.35e-9'))))
+        self.assertEqual(ibis_file.models[0].ramp.dv_dt_f,
+                         ((Decimal('2.0'), Decimal('0.50e-9')),
+                          (Decimal('2.0'), Decimal('0.75e-9')),
+                          (Decimal('2.0'), Decimal('0.35e-9'))))
+        self.assertEqual(ibis_file.models[0].ramp.r_load,
+                         Decimal('500'))
+        self.assertEqual(ibis_file.models[0].falling_waveforms, [])
+        self.assertEqual(ibis_file.models[0].rising_waveforms, [])
+
     def test_load_sample1(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/sample1.ibs')
 
         # General information.
-        self.assertEqual(ibis_file.version, '3.2')
+        self.assertEqual(ibis_file.ibis_version, '3.2')
         self.assertEqual(ibis_file.file_name, 'sample1.ibs')
-        self.assertEqual(ibis_file.file_rev, '0')
+        self.assertEqual(ibis_file.file_revision, '0')
         self.assertEqual(ibis_file.date, '10/23/2001')
         self.assertEqual(ibis_file.source, 'Company_ABC, Adapted From Real IBIS Model')
         self.assertEqual(ibis_file.notes, None)
@@ -265,7 +431,7 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis_file.models[0].falling_waveforms, [])
         self.assertEqual(ibis_file.models[0].rising_waveforms, [])
 
-        #  model.
+        # Last model.
         self.assertEqual(ibis_file.models[11].name, 'BT2Z50CX_PU50K')
         self.assertEqual(ibis_file.models[11].model_type, 'I/O')
         self.assertEqual(ibis_file.models[11].polarity, 'Non-Inverting')
@@ -339,6 +505,203 @@ class IbisTest(unittest.TestCase):
             waveform.table.samples[99],
             ('1.50000nS', '1.58450V', '1.48580V', '1.71990V'))
 
+    def test_load_sample1_convert_numerical_to_decimal(self):
+        ibis_file = ibis.load_file('tests/files/ibis/pybis/sample1.ibs',
+                                   convert_numerical_to_decimal=True)
+
+        # General information.
+        self.assertEqual(ibis_file.ibis_version, '3.2')
+        self.assertEqual(ibis_file.file_name, 'sample1.ibs')
+        self.assertEqual(ibis_file.file_revision, '0')
+        self.assertEqual(ibis_file.date, '10/23/2001')
+        self.assertEqual(ibis_file.source, 'Company_ABC, Adapted From Real IBIS Model')
+        self.assertEqual(ibis_file.notes, None)
+        self.assertEqual(ibis_file.disclaimer, None)
+        self.assertEqual(ibis_file.copyright, 'Public Sample')
+
+        # Components.
+        self.assertEqual(len(ibis_file.components), 1)
+
+        # First (and only) component.
+        component = ibis_file.components[0]
+
+        self.assertEqual(component.name, 'WXY123')
+        self.assertEqual(component.si_location, None)
+        self.assertEqual(component.timing_location, None)
+        self.assertEqual(component.manufacturer, 'Company_ABC')
+        self.assertEqual(component.package.r_pkg.typical, Decimal('0.0e-3'))
+        self.assertEqual(component.package.r_pkg.minimum, Decimal('0.0e-3'))
+        self.assertEqual(component.package.r_pkg.maximum, Decimal('0.0e-3'))
+        self.assertEqual(component.package.l_pkg.typical, Decimal('3.0e-9'))
+        self.assertEqual(component.package.l_pkg.minimum, Decimal('2.0e-9'))
+        self.assertEqual(component.package.l_pkg.maximum, Decimal('4.0e-9'))
+        self.assertEqual(component.package.c_pkg.typical, Decimal('0.5e-12'))
+        self.assertEqual(component.package.c_pkg.minimum, Decimal('0.3e-12'))
+        self.assertEqual(component.package.c_pkg.maximum, Decimal('0.8e-12'))
+        self.assertEqual(len(component.pins), 231)
+        self.assertEqual(component.pins[0].name, 'A10')
+        self.assertEqual(component.pins[0].signal_name, 'cs1')
+        self.assertEqual(component.pins[0].model_name, 'BT2Z50CX')
+        self.assertEqual(component.pins[0].r_pin, Decimal('32e-3'))
+        self.assertEqual(component.pins[0].l_pin, Decimal('3.44e-9'))
+        self.assertEqual(component.pins[0].c_pin, Decimal('0.46e-12'))
+        self.assertEqual(component.pins[230].name, 'Y9')
+        self.assertEqual(component.pins[230].signal_name, 'sc_moden')
+        self.assertEqual(component.pins[230].model_name, 'BPS2P4F_PU50K')
+        self.assertEqual(component.pins[230].r_pin, Decimal('32e-3'))
+        self.assertEqual(component.pins[230].l_pin, Decimal('3.45e-9'))
+        self.assertEqual(component.pins[230].c_pin, Decimal('0.46e-12'))
+
+        # Models.
+        self.assertEqual(len(ibis_file.models), 14)
+
+        # First model.
+        self.assertEqual(ibis_file.models[0].name, 'BIP00F')
+        self.assertEqual(ibis_file.models[0].model_type, 'Input')
+        self.assertEqual(ibis_file.models[0].polarity, 'Non-Inverting')
+        self.assertEqual(ibis_file.models[0].enable, None)
+        self.assertEqual(ibis_file.models[0].vinl, Decimal('0.8'))
+        self.assertEqual(ibis_file.models[0].vinh, Decimal('2.0'))
+        self.assertEqual(ibis_file.models[0].c_comp.typical, Decimal('0.737e-12'))
+        self.assertEqual(ibis_file.models[0].c_comp.minimum, 'NA')
+        self.assertEqual(ibis_file.models[0].c_comp.maximum, 'NA')
+        self.assertEqual(ibis_file.models[0].vmeas, None)
+        self.assertEqual(ibis_file.models[0].cref, None)
+        self.assertEqual(ibis_file.models[0].vref, None)
+        self.assertEqual(ibis_file.models[0].rref, None)
+        self.assertEqual(ibis_file.models[0].temperature_range.typical, Decimal('25'))
+        self.assertEqual(ibis_file.models[0].temperature_range.minimum, Decimal('0'))
+        self.assertEqual(ibis_file.models[0].temperature_range.maximum, Decimal('125'))
+        self.assertEqual(ibis_file.models[0].voltage_range.typical, Decimal('3.3'))
+        self.assertEqual(ibis_file.models[0].voltage_range.minimum, Decimal('3.0'))
+        self.assertEqual(ibis_file.models[0].voltage_range.maximum, Decimal('3.6'))
+
+        self.assertEqual(len(ibis_file.models[0].gnd_clamp), 67)
+        self.assertEqual(
+            ibis_file.models[0].gnd_clamp[0],
+            (Decimal('-3.30000'),
+             Decimal('-11.46380'),
+             Decimal('-11.71150'),
+             Decimal('-11.40800')))
+        self.assertEqual(
+            ibis_file.models[0].gnd_clamp[66],
+            (Decimal('3.30000'),
+             Decimal('6.60800e-12'),
+             Decimal('26.57000e-9'),
+             Decimal('6.32380e-12')))
+
+        self.assertEqual(len(ibis_file.models[0].power_clamp), 34)
+        self.assertEqual(
+            ibis_file.models[0].power_clamp[0],
+            (Decimal('-3.30000'),
+             Decimal('10.22730'),
+             Decimal('10.48520'),
+             Decimal('10.16810')))
+        self.assertEqual(
+            ibis_file.models[0].power_clamp[33],
+            (Decimal('0.00000'),
+             Decimal('6.59380e-12'),
+             Decimal('10.90680e-12'),
+             Decimal('7.23330e-12')))
+
+        self.assertEqual(ibis_file.models[0].pullup, None)
+        self.assertEqual(ibis_file.models[0].pulldown, None)
+        self.assertEqual(ibis_file.models[0].ramp, None)
+        self.assertEqual(ibis_file.models[0].falling_waveforms, [])
+        self.assertEqual(ibis_file.models[0].rising_waveforms, [])
+
+        # Last model.
+        self.assertEqual(ibis_file.models[11].name, 'BT2Z50CX_PU50K')
+        self.assertEqual(ibis_file.models[11].model_type, 'I/O')
+        self.assertEqual(ibis_file.models[11].polarity, 'Non-Inverting')
+        self.assertEqual(ibis_file.models[11].enable, 'Active-High')
+        self.assertEqual(ibis_file.models[11].vinl, Decimal('0.8'))
+        self.assertEqual(ibis_file.models[11].vinh, Decimal('2.0'))
+        self.assertEqual(ibis_file.models[11].c_comp.typical, Decimal('1.26e-12'))
+        self.assertEqual(ibis_file.models[11].c_comp.minimum, 'NA')
+        self.assertEqual(ibis_file.models[11].c_comp.maximum, 'NA')
+        self.assertEqual(ibis_file.models[11].vmeas, Decimal('1.65'))
+        self.assertEqual(ibis_file.models[11].cref, Decimal('1.0e-12'))
+        self.assertEqual(ibis_file.models[11].vref, Decimal('0'))
+        self.assertEqual(ibis_file.models[11].rref, Decimal('1e6'))
+        self.assertEqual(ibis_file.models[11].temperature_range.typical, Decimal('25'))
+        self.assertEqual(ibis_file.models[11].temperature_range.minimum, Decimal('0'))
+        self.assertEqual(ibis_file.models[11].temperature_range.maximum, Decimal('125'))
+        self.assertEqual(ibis_file.models[11].voltage_range.typical, Decimal('3.3'))
+        self.assertEqual(ibis_file.models[11].voltage_range.minimum, Decimal('3.0'))
+        self.assertEqual(ibis_file.models[11].voltage_range.maximum, Decimal('3.6'))
+        self.assertEqual(len(ibis_file.models[11].gnd_clamp), 35)
+        self.assertEqual(len(ibis_file.models[11].power_clamp), 58)
+        self.assertEqual(len(ibis_file.models[11].pullup), 100)
+        self.assertEqual(len(ibis_file.models[11].pulldown), 100)
+        self.assertEqual(ibis_file.models[11].ramp.dv_dt_r,
+                         ((Decimal('0.950146'), Decimal('0.229176e-9')),
+                          (Decimal('0.891184'), Decimal('0.260292e-9')),
+                          (Decimal('1.0311'), Decimal('0.221583e-9'))))
+        self.assertEqual(ibis_file.models[11].ramp.dv_dt_f,
+                         ((Decimal('0.94062'), Decimal('0.319408e-9')),
+                          (Decimal('0.89298'), Decimal('0.416034e-9')),
+                          (Decimal('1.00716'), Decimal('0.284201e-9'))))
+        self.assertEqual(ibis_file.models[11].ramp.r_load, Decimal('50'))
+
+        # Falling waveforms.
+        self.assertEqual(len(ibis_file.models[11].falling_waveforms), 2)
+
+        waveform = ibis_file.models[11].falling_waveforms[0]
+        self.assertEqual(waveform.r_fixture, Decimal('50'))
+        self.assertEqual(waveform.v_fixture.typical, Decimal('3.3'))
+        self.assertEqual(waveform.v_fixture.minimum, Decimal('3.0'))
+        self.assertEqual(waveform.v_fixture.maximum, Decimal('3.6'))
+        self.assertEqual(len(waveform.table.samples), 100)
+        self.assertEqual(
+            waveform.table.samples[0],
+            (Decimal('0.00000'),
+             Decimal('3.30000'),
+             Decimal('3.00000'),
+             Decimal('3.60000')))
+        self.assertEqual(
+            waveform.table.samples[99],
+            (Decimal('1.50000e-9'),
+             Decimal('1.73230'),
+             Decimal('1.51170'),
+             Decimal('1.92140')))
+        waveform = ibis_file.models[11].falling_waveforms[1]
+        self.assertEqual(len(waveform.table.samples), 100)
+        self.assertEqual(
+            waveform.table.samples[0],
+            (Decimal('0.00000'),
+             Decimal('1.59770'),
+             Decimal('1.50670'),
+             Decimal('1.73430')))
+        self.assertEqual(
+            waveform.table.samples[99],
+            (Decimal('1.35000e-9'),
+             Decimal('14.88300e-3'),
+             Decimal('24.09000e-3'),
+             Decimal('19.09910e-3')))
+
+        # Rising waveforms.
+        self.assertEqual(len(ibis_file.models[11].rising_waveforms), 2)
+
+        waveform = ibis_file.models[11].rising_waveforms[0]
+        self.assertEqual(waveform.r_fixture, Decimal('50'))
+        self.assertEqual(waveform.v_fixture.typical, Decimal('0.000'))
+        self.assertEqual(waveform.v_fixture.minimum, Decimal('0.000'))
+        self.assertEqual(waveform.v_fixture.maximum, Decimal('0.000'))
+        self.assertEqual(len(waveform.table.samples), 100)
+        self.assertEqual(
+            waveform.table.samples[0],
+            (Decimal('0.00000'),
+             Decimal('923.25950e-6'),
+             Decimal('493.94600e-6'),
+             Decimal('1.40550e-3')))
+        self.assertEqual(
+            waveform.table.samples[99],
+            (Decimal('1.50000e-9'),
+             Decimal('1.58450'),
+             Decimal('1.48580'),
+             Decimal('1.71990')))
+
     def test_convert_numerical(self):
         self.assertEqual(ibis.convert_numerical('1.1T'), Decimal('1.1e12'))
         self.assertEqual(ibis.convert_numerical('1.1G'), Decimal('1.1e9'))
@@ -374,6 +737,32 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis.split_numerical('1.1Ohm'), ('1.1', '', 'Ohm'))
         self.assertEqual(ibis.split_numerical('1.1kOhm'), ('1.1', 'k', 'Ohm'))
         self.assertEqual(ibis.split_numerical('5.1e-3V'), ('5.1e-3', '', 'V'))
+
+    def test_get_model_by_name(self):
+        ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs')
+
+        model = ibis_file.get_model_by_name('TOP_MODEL_BUS_HOLD')
+        self.assertEqual(model.name, 'TOP_MODEL_BUS_HOLD')
+
+        with self.assertRaises(ecdtools.ibis.Error) as cm:
+            ibis_file.get_model_by_name('Missing')
+
+        self.assertEqual(
+            str(cm.exception),
+            'Expected model name TOP_MODEL_BUS_HOLD, but got Missing.')
+
+    def test_get_component_by_name(self):
+        ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs')
+
+        model = ibis_file.get_component_by_name('BUS-HOLD-SAMPLE')
+        self.assertEqual(model.name, 'BUS-HOLD-SAMPLE')
+
+        with self.assertRaises(ecdtools.ibis.Error) as cm:
+            ibis_file.get_component_by_name('Missing')
+
+        self.assertEqual(
+            str(cm.exception),
+            'Expected component name BUS-HOLD-SAMPLE, but got Missing.')
 
     def test_load_pybis_files(self):
         filenames = [
