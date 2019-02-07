@@ -876,7 +876,7 @@ def load_file(filename, convert_strings=False):
     contents.
 
     Give `convert_strings` as ``True`` to convert numerical numbers
-    from strings to decimal.Decimal and 'NA' to ``None``.
+    from strings to ``decimal.Decimal`` and ``'NA'`` to ``None``.
 
     """
 
