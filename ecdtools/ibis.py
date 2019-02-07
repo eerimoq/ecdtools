@@ -404,7 +404,7 @@ class IbsFile(object):
 
     """
 
-    def __init__(self, string, convert_numerical_to_decimal):
+    def __init__(self, string, convert_strings):
         self._ibis_version = None
         self._file_name = None
         self._file_revision = None
@@ -415,7 +415,7 @@ class IbsFile(object):
         self._copyright = None
         self._components = []
         self._models = []
-        self._convert_numerical_to_decimal = convert_numerical_to_decimal
+        self._convert_strings = convert_strings
 
         string = string.replace('\r', '')
         string = re.sub(r'[ \t]+\n', '\n', string)
@@ -696,8 +696,10 @@ class IbsFile(object):
     def _load_numerical(self, data):
         value = data.value
 
-        if value != 'NA':
-            if self._convert_numerical_to_decimal:
+        if self._convert_strings:
+            if value == 'NA':
+                value = None
+            else:
                 value = convert_numerical(value)
 
         return value
@@ -707,7 +709,7 @@ class IbsFile(object):
 
 
     def _load_numerical_sub_parameter(self, data):
-        if self._convert_numerical_to_decimal:
+        if self._convert_strings:
             value = self._load_numerical(data[5])
         else:
             value = data[5].value
@@ -734,10 +736,13 @@ class IbsFile(object):
         ]
 
     def _load_ramp_value(self, data):
-        if data != 'NA':
+        if data == 'NA':
+            if self._convert_strings:
+                data = None
+        else:
             dv, dt = data.split('/')
 
-            if self._convert_numerical_to_decimal:
+            if self._convert_strings:
                 dv = convert_numerical(dv)
                 dt = convert_numerical(dt)
 
@@ -866,19 +871,19 @@ def convert_numerical(string):
     return value
 
 
-def load_file(filename, convert_numerical_to_decimal=False):
+def load_file(filename, convert_strings=False):
     """Load given IBIS file and return an IbsFile object with its
     contents.
 
-    Give `convert_numerical_to_decimal` as ``True`` to convert all
-    numerical values from strings to decimal.Decimal.
+    Give `convert_strings` as ``True`` to convert numerical numbers
+    from strings to decimal.Decimal and 'NA' to ``None``.
 
     """
 
     with open(filename, 'r') as fin:
         string = fin.read()
 
-    return IbsFile(string, convert_numerical_to_decimal)
+    return IbsFile(string, convert_strings)
 
 
 def format_or(items):

@@ -174,9 +174,9 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis_file.models[0].falling_waveforms, [])
         self.assertEqual(ibis_file.models[0].rising_waveforms, [])
 
-    def test_load_bushold_convert_numerical_to_decimal(self):
+    def test_load_bushold_convert_strings(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs',
-                                   convert_numerical_to_decimal=True)
+                                   convert_strings=True)
 
         # General information.
         self.assertEqual(ibis_file.ibis_version, '3.2')
@@ -255,54 +255,54 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(
             ibis_file.models[0].gnd_clamp,
             [
-                (Decimal('-2.0000e+00'), Decimal('-6.158e+17'), 'NA', 'NA'),
-                (Decimal('-1.9000e+00'), Decimal('-1.697e+16'), 'NA', 'NA'),
-                (Decimal('-1.8000e+00'), Decimal('-4.679e+14'), 'NA', 'NA'),
-                (Decimal('-1.7000e+00'), Decimal('-1.290e+13'), 'NA', 'NA'),
-                (Decimal('-1.6000e+00'), Decimal('-3.556e+11'), 'NA', 'NA'),
-                (Decimal('-1.5000e+00'), Decimal('-9.802e+09'), 'NA', 'NA'),
-                (Decimal('-1.4000e+00'), Decimal('-2.702e+08'), 'NA', 'NA'),
-                (Decimal('-1.3000e+00'), Decimal('-7.449e+06'), 'NA', 'NA'),
-                (Decimal('-1.2000e+00'), Decimal('-2.053e+05'), 'NA', 'NA'),
-                (Decimal('-1.1000e+00'), Decimal('-5.660e+03'), 'NA', 'NA'),
-                (Decimal('-1.0000e+00'), Decimal('-1.560e+02'), 'NA', 'NA'),
-                (Decimal('-9.0000e-01'), Decimal('-4.308e+00'), 'NA', 'NA'),
-                (Decimal('-8.0000e-01'), Decimal('-1.221e-01'), 'NA', 'NA'),
-                (Decimal('-7.0000e-01'), Decimal('-4.315e-03'), 'NA', 'NA'),
-                (Decimal('-6.0000e-01'), Decimal('-1.715e-04'), 'NA', 'NA'),
-                (Decimal('-5.0000e-01'), Decimal('-4.959e-06'), 'NA', 'NA'),
-                (Decimal('-4.0000e-01'), Decimal('-1.373e-07'), 'NA', 'NA'),
-                (Decimal('-3.0000e-01'), Decimal('-4.075e-09'), 'NA', 'NA'),
-                (Decimal('-2.0000e-01'), Decimal('-3.044e-10'), 'NA', 'NA'),
-                (Decimal('-1.0000e-01'), Decimal('-1.030e-10'), 'NA', 'NA'),
-                (Decimal('0.'), Decimal('0'), 'NA', 'NA'),
-                (Decimal('5'), Decimal('0'), 'NA', 'NA')
+                (Decimal('-2.0000e+00'), Decimal('-6.158e+17'), None, None),
+                (Decimal('-1.9000e+00'), Decimal('-1.697e+16'), None, None),
+                (Decimal('-1.8000e+00'), Decimal('-4.679e+14'), None, None),
+                (Decimal('-1.7000e+00'), Decimal('-1.290e+13'), None, None),
+                (Decimal('-1.6000e+00'), Decimal('-3.556e+11'), None, None),
+                (Decimal('-1.5000e+00'), Decimal('-9.802e+09'), None, None),
+                (Decimal('-1.4000e+00'), Decimal('-2.702e+08'), None, None),
+                (Decimal('-1.3000e+00'), Decimal('-7.449e+06'), None, None),
+                (Decimal('-1.2000e+00'), Decimal('-2.053e+05'), None, None),
+                (Decimal('-1.1000e+00'), Decimal('-5.660e+03'), None, None),
+                (Decimal('-1.0000e+00'), Decimal('-1.560e+02'), None, None),
+                (Decimal('-9.0000e-01'), Decimal('-4.308e+00'), None, None),
+                (Decimal('-8.0000e-01'), Decimal('-1.221e-01'), None, None),
+                (Decimal('-7.0000e-01'), Decimal('-4.315e-03'), None, None),
+                (Decimal('-6.0000e-01'), Decimal('-1.715e-04'), None, None),
+                (Decimal('-5.0000e-01'), Decimal('-4.959e-06'), None, None),
+                (Decimal('-4.0000e-01'), Decimal('-1.373e-07'), None, None),
+                (Decimal('-3.0000e-01'), Decimal('-4.075e-09'), None, None),
+                (Decimal('-2.0000e-01'), Decimal('-3.044e-10'), None, None),
+                (Decimal('-1.0000e-01'), Decimal('-1.030e-10'), None, None),
+                (Decimal('0.'), Decimal('0'), None, None),
+                (Decimal('5'), Decimal('0'), None, None)
             ])
         self.assertEqual(
             ibis_file.models[0].power_clamp,
             [
-                (Decimal('-2.0000e+00'), Decimal('6.158e+17'), 'NA', 'NA'),
-                (Decimal('-1.9000e+00'), Decimal('1.697e+16'), 'NA', 'NA'),
-                (Decimal('-1.8000e+00'), Decimal('4.679e+14'), 'NA', 'NA'),
-                (Decimal('-1.7000e+00'), Decimal('1.290e+13'), 'NA', 'NA'),
-                (Decimal('-1.6000e+00'), Decimal('3.556e+11'), 'NA', 'NA'),
-                (Decimal('-1.5000e+00'), Decimal('9.802e+09'), 'NA', 'NA'),
-                (Decimal('-1.4000e+00'), Decimal('2.702e+08'), 'NA', 'NA'),
-                (Decimal('-1.3000e+00'), Decimal('7.449e+06'), 'NA', 'NA'),
-                (Decimal('-1.2000e+00'), Decimal('2.053e+05'), 'NA', 'NA'),
-                (Decimal('-1.1000e+00'), Decimal('5.660e+03'), 'NA', 'NA'),
-                (Decimal('-1.0000e+00'), Decimal('1.560e+02'), 'NA', 'NA'),
-                (Decimal('-9.0000e-01'), Decimal('4.308e+00'), 'NA', 'NA'),
-                (Decimal('-8.0000e-01'), Decimal('1.221e-01'), 'NA', 'NA'),
-                (Decimal('-7.0000e-01'), Decimal('4.315e-03'), 'NA', 'NA'),
-                (Decimal('-6.0000e-01'), Decimal('1.715e-04'), 'NA', 'NA'),
-                (Decimal('-5.0000e-01'), Decimal('4.959e-06'), 'NA', 'NA'),
-                (Decimal('-4.0000e-01'), Decimal('1.373e-07'), 'NA', 'NA'),
-                (Decimal('-3.0000e-01'), Decimal('4.075e-09'), 'NA', 'NA'),
-                (Decimal('-2.0000e-01'), Decimal('3.044e-10'), 'NA', 'NA'),
-                (Decimal('-1.0000e-01'), Decimal('1.030e-10'), 'NA', 'NA'),
-                (Decimal('0.'), Decimal('0'), 'NA', 'NA'),
-                (Decimal('5'), Decimal('0'), 'NA', 'NA')
+                (Decimal('-2.0000e+00'), Decimal('6.158e+17'), None, None),
+                (Decimal('-1.9000e+00'), Decimal('1.697e+16'), None, None),
+                (Decimal('-1.8000e+00'), Decimal('4.679e+14'), None, None),
+                (Decimal('-1.7000e+00'), Decimal('1.290e+13'), None, None),
+                (Decimal('-1.6000e+00'), Decimal('3.556e+11'), None, None),
+                (Decimal('-1.5000e+00'), Decimal('9.802e+09'), None, None),
+                (Decimal('-1.4000e+00'), Decimal('2.702e+08'), None, None),
+                (Decimal('-1.3000e+00'), Decimal('7.449e+06'), None, None),
+                (Decimal('-1.2000e+00'), Decimal('2.053e+05'), None, None),
+                (Decimal('-1.1000e+00'), Decimal('5.660e+03'), None, None),
+                (Decimal('-1.0000e+00'), Decimal('1.560e+02'), None, None),
+                (Decimal('-9.0000e-01'), Decimal('4.308e+00'), None, None),
+                (Decimal('-8.0000e-01'), Decimal('1.221e-01'), None, None),
+                (Decimal('-7.0000e-01'), Decimal('4.315e-03'), None, None),
+                (Decimal('-6.0000e-01'), Decimal('1.715e-04'), None, None),
+                (Decimal('-5.0000e-01'), Decimal('4.959e-06'), None, None),
+                (Decimal('-4.0000e-01'), Decimal('1.373e-07'), None, None),
+                (Decimal('-3.0000e-01'), Decimal('4.075e-09'), None, None),
+                (Decimal('-2.0000e-01'), Decimal('3.044e-10'), None, None),
+                (Decimal('-1.0000e-01'), Decimal('1.030e-10'), None, None),
+                (Decimal('0.'), Decimal('0'), None, None),
+                (Decimal('5'), Decimal('0'), None, None)
             ])
         self.assertEqual(
             ibis_file.models[0].pullup,
@@ -505,9 +505,9 @@ class IbisTest(unittest.TestCase):
             waveform.table.samples[99],
             ('1.50000nS', '1.58450V', '1.48580V', '1.71990V'))
 
-    def test_load_sample1_convert_numerical_to_decimal(self):
+    def test_load_sample1_convert_strings(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/sample1.ibs',
-                                   convert_numerical_to_decimal=True)
+                                   convert_strings=True)
 
         # General information.
         self.assertEqual(ibis_file.ibis_version, '3.2')
@@ -563,8 +563,8 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis_file.models[0].vinl, Decimal('0.8'))
         self.assertEqual(ibis_file.models[0].vinh, Decimal('2.0'))
         self.assertEqual(ibis_file.models[0].c_comp.typical, Decimal('0.737e-12'))
-        self.assertEqual(ibis_file.models[0].c_comp.minimum, 'NA')
-        self.assertEqual(ibis_file.models[0].c_comp.maximum, 'NA')
+        self.assertEqual(ibis_file.models[0].c_comp.minimum, None)
+        self.assertEqual(ibis_file.models[0].c_comp.maximum, None)
         self.assertEqual(ibis_file.models[0].vmeas, None)
         self.assertEqual(ibis_file.models[0].cref, None)
         self.assertEqual(ibis_file.models[0].vref, None)
@@ -618,8 +618,8 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis_file.models[11].vinl, Decimal('0.8'))
         self.assertEqual(ibis_file.models[11].vinh, Decimal('2.0'))
         self.assertEqual(ibis_file.models[11].c_comp.typical, Decimal('1.26e-12'))
-        self.assertEqual(ibis_file.models[11].c_comp.minimum, 'NA')
-        self.assertEqual(ibis_file.models[11].c_comp.maximum, 'NA')
+        self.assertEqual(ibis_file.models[11].c_comp.minimum, None)
+        self.assertEqual(ibis_file.models[11].c_comp.maximum, None)
         self.assertEqual(ibis_file.models[11].vmeas, Decimal('1.65'))
         self.assertEqual(ibis_file.models[11].cref, Decimal('1.0e-12'))
         self.assertEqual(ibis_file.models[11].vref, Decimal('0'))
