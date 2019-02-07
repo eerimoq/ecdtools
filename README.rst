@@ -6,7 +6,7 @@ About
 
 Electronic circuit design in Python 3.
 
-- `IBIS`_ parsing. Currently only a subset of the IBIS 6.1
+- `IBIS`_ parsing. Currently only a subset of the `IBIS 6.1`_
   specification is supported.
 
 Project homepage: https://github.com/eerimoq/ecdtools
@@ -123,3 +123,5 @@ Contributing
 .. _coverage: https://coveralls.io/github/eerimoq/ecdtools
 
 .. _IBIS: http://ibis.org
+
+.. _IBIS 6.1: http://ibis.org/ver6.1/ver6_1.pdf
