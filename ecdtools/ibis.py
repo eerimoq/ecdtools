@@ -253,34 +253,34 @@ class Parser(textparser.Parser):
                             Optional(nls),
                             '[ibis ver]', 'WS', 'WORD')
 
-        comment_char = Sequence(nls, '[comment char]')
+        comment_char = Sequence('[comment char]')
 
-        file_name = Sequence(nls, '[file name]', 'WS', 'WORD')
+        file_name = Sequence('[file name]', 'WS', 'WORD')
 
-        file_rev = Sequence(nls, '[file rev]', 'WS', 'WORD')
+        file_rev = Sequence('[file rev]', 'WS', 'WORD')
 
-        date = Sequence(nls, '[date]', any_until_nl)
+        date = Sequence('[date]', any_until_nl)
 
-        source = Sequence(nls, '[source]', any_until_keyword)
+        source = Sequence('[source]', any_until_keyword)
 
-        notes = Sequence(nls, '[notes]', any_until_keyword)
+        notes = Sequence('[notes]', any_until_keyword)
 
-        disclaimer = Sequence(nls, '[disclaimer]', any_until_keyword)
+        disclaimer = Sequence('[disclaimer]', any_until_keyword)
 
-        copyright_ = Sequence(nls, '[copyright]', any_until_keyword)
+        copyright_ = Sequence('[copyright]', any_until_keyword)
 
-        component = Sequence(nls, '[component]', any_until_nl,
+        component = Sequence('[component]', any_until_nl,
                              ZeroOrMore(Sequence(nls, 'WORD', 'WS', 'WORD')))
 
-        manufacturer = Sequence(nls, '[manufacturer]', any_until_nl)
+        manufacturer = Sequence('[manufacturer]', any_until_nl)
 
-        package = Sequence(nls, '[package]',
+        package = Sequence('[package]',
                            ZeroOrMore(Sequence(nls, 'WORD',
                                                'WS', 'WORD',
                                                'WS', 'WORD',
                                                'WS', 'WORD')))
 
-        pin = Sequence(nls, '[pin]',
+        pin = Sequence('[pin]',
                        'WS', 'WORD',
                        'WS', 'WORD',
                        'WS', 'WORD',
@@ -300,7 +300,7 @@ class Parser(textparser.Parser):
                                                       'WS', 'WORD',
                                                       'WS', 'WORD')))))
 
-        diff_pin = Sequence(nls, '[diff pin]',
+        diff_pin = Sequence('[diff pin]',
                             'WS', 'WORD',
                             'WS', 'WORD',
                             'WS', 'WORD',
@@ -313,13 +313,13 @@ class Parser(textparser.Parser):
                                                 'WS', 'WORD',
                                                 'WS', 'WORD')))
 
-        series_switch_groups = Sequence(nls, '[series switch groups]',
+        series_switch_groups = Sequence('[series switch groups]',
                                         ZeroOrMore(Sequence(nls, any_until_nl)))
 
-        model_selector = Sequence(nls, '[model selector]', 'WS', 'WORD',
+        model_selector = Sequence('[model selector]', 'WS', 'WORD',
                                   ZeroOrMore(Sequence(nls, 'WORD', any_until_nl)))
 
-        model = Sequence(nls, '[model]', 'WS', 'WORD',
+        model = Sequence('[model]', 'WS', 'WORD',
                          ZeroOrMore(choice(Tag('Quad',
                                                Sequence(nls, 'WORD',
                                                         'WS', 'WORD',
@@ -328,25 +328,25 @@ class Parser(textparser.Parser):
                                            sub_parameter,
                                            numerical_sub_parameter)))
 
-        add_submodel = Sequence(nls, '[add submodel]',
+        add_submodel = Sequence('[add submodel]',
                                 ZeroOrMore(Sequence(nls, 'WORD', 'WS', 'WORD')))
 
-        temperature_range = Sequence(nls, '[temperature range]',
+        temperature_range = Sequence('[temperature range]',
                                      'WS', 'WORD',
                                      'WS', 'WORD',
                                      'WS', 'WORD')
 
-        voltage_range = Sequence(nls, '[voltage range]',
+        voltage_range = Sequence('[voltage range]',
                                  'WS', 'WORD',
                                  'WS', 'WORD',
                                  'WS', 'WORD')
 
-        pullup_reference = Sequence(nls, '[pullup reference]',
+        pullup_reference = Sequence('[pullup reference]',
                                     'WS', 'WORD',
                                     'WS', 'WORD',
                                     'WS', 'WORD')
 
-        pulldown_reference = Sequence(nls, '[pulldown reference]',
+        pulldown_reference = Sequence('[pulldown reference]',
                                       'WS', 'WORD',
                                       'WS', 'WORD',
                                       'WS', 'WORD')
@@ -357,15 +357,15 @@ class Parser(textparser.Parser):
                                          'WS', 'WORD',
                                          'WS', 'WORD'))
 
-        gnd_clamp = Sequence(nls, '[gnd clamp]', quad_table)
+        gnd_clamp = Sequence('[gnd clamp]', quad_table)
 
-        power_clamp = Sequence(nls, '[power clamp]', quad_table)
+        power_clamp = Sequence('[power clamp]', quad_table)
 
-        pullup = Sequence(nls, '[pullup]', quad_table)
+        pullup = Sequence('[pullup]', quad_table)
 
-        pulldown = Sequence(nls, '[pulldown]', quad_table)
+        pulldown = Sequence('[pulldown]', quad_table)
 
-        ramp = Sequence(nls, '[ramp]',
+        ramp = Sequence('[ramp]',
                         ZeroOrMore(choice(numerical_sub_parameter,
                                           sub_parameter_typ_min_max)))
 
@@ -377,53 +377,55 @@ class Parser(textparser.Parser):
                                                   'WS', 'WORD')),
                                      numerical_sub_parameter))
 
-        falling_waveform = Sequence(nls, '[falling waveform]', waveform)
+        falling_waveform = Sequence('[falling waveform]', waveform)
 
-        rising_waveform = Sequence(nls, '[rising waveform]', waveform)
+        rising_waveform = Sequence('[rising waveform]', waveform)
 
-        submodel = Sequence(nls, '[submodel]', 'WS', 'WORD',
+        submodel = Sequence('[submodel]', 'WS', 'WORD',
                             OneOrMore(sub_parameter))
 
-        submodel_spec = Sequence(nls, '[submodel spec]',
+        submodel_spec = Sequence('[submodel spec]',
                                  OneOrMore(sub_parameter_typ_min_max))
 
-        unknown_keyword = Sequence(nls, 'KEYWORD', any_until_keyword)
+        unknown_keyword = Sequence('KEYWORD', any_until_keyword)
 
-        end = Sequence(nls, '[end]')
+        end = Sequence('[end]')
 
-        ibis_file = Sequence(ibis_ver,
-                             ZeroOrMore(choice(comment_char,
-                                               file_name,
-                                               file_rev,
-                                               date,
-                                               source,
-                                               notes,
-                                               disclaimer,
-                                               copyright_,
-                                               component,
-                                               manufacturer,
-                                               package,
-                                               pin,
-                                               diff_pin,
-                                               series_switch_groups,
-                                               model_selector,
-                                               model,
-                                               add_submodel,
-                                               temperature_range,
-                                               voltage_range,
-                                               pullup_reference,
-                                               pulldown_reference,
-                                               gnd_clamp,
-                                               power_clamp,
-                                               pullup,
-                                               pulldown,
-                                               ramp,
-                                               falling_waveform,
-                                               rising_waveform,
-                                               submodel,
-                                               submodel_spec,
-                                               unknown_keyword,
-                                               end)))
+        ibis_file = Sequence(
+            ibis_ver,
+            ZeroOrMore(Sequence(nls,
+                                choice(comment_char,
+                                       file_name,
+                                       file_rev,
+                                       date,
+                                       source,
+                                       notes,
+                                       disclaimer,
+                                       copyright_,
+                                       component,
+                                       manufacturer,
+                                       package,
+                                       pin,
+                                       diff_pin,
+                                       series_switch_groups,
+                                       model_selector,
+                                       model,
+                                       add_submodel,
+                                       temperature_range,
+                                       voltage_range,
+                                       pullup_reference,
+                                       pulldown_reference,
+                                       gnd_clamp,
+                                       power_clamp,
+                                       pullup,
+                                       pulldown,
+                                       ramp,
+                                       falling_waveform,
+                                       rising_waveform,
+                                       submodel,
+                                       submodel_spec,
+                                       unknown_keyword,
+                                       end))))
 
         return ibis_file
 
@@ -454,8 +456,8 @@ class IbsFile(object):
         self._ibis_version = tokens[0][5].value
 
         for item in tokens[1]:
-            keyword = item[1].kind
-            data = item[2:]
+            keyword = item[1][0].kind
+            data = item[1][1:]
 
             if keyword == '[file name]':
                 self._file_name = data[1].value
@@ -510,7 +512,7 @@ class IbsFile(object):
             elif keyword == '[end]':
                 pass
             else:
-                LOGGER.debug('Unsupported keyword %s.', item[1].value)
+                LOGGER.debug('Unsupported keyword %s.', item[1][0].value)
 
     @property
     def component_names(self):
