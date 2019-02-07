@@ -174,9 +174,9 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis_file.models[0].falling_waveforms, [])
         self.assertEqual(ibis_file.models[0].rising_waveforms, [])
 
-    def test_load_bushold_convert_strings(self):
+    def test_load_bushold_transform(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs',
-                                   convert_strings=True)
+                                   transform=True)
 
         # General information.
         self.assertEqual(ibis_file.ibis_version, '3.2')
@@ -505,9 +505,9 @@ class IbisTest(unittest.TestCase):
             waveform.table.samples[99],
             ('1.50000nS', '1.58450V', '1.48580V', '1.71990V'))
 
-    def test_load_sample1_convert_strings(self):
+    def test_load_sample1_transform(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/sample1.ibs',
-                                   convert_strings=True)
+                                   transform=True)
 
         # General information.
         self.assertEqual(ibis_file.ibis_version, '3.2')

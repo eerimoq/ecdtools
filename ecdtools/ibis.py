@@ -404,7 +404,7 @@ class IbsFile(object):
 
     """
 
-    def __init__(self, string, convert_strings):
+    def __init__(self, string, transform):
         self._ibis_version = None
         self._file_name = None
         self._file_revision = None
@@ -415,7 +415,7 @@ class IbsFile(object):
         self._copyright = None
         self._components = []
         self._models = []
-        self._convert_strings = convert_strings
+        self._transform = transform
 
         string = string.replace('\r', '')
         string = re.sub(r'[ \t]+\n', '\n', string)
@@ -696,7 +696,7 @@ class IbsFile(object):
     def _load_numerical(self, data):
         value = data.value
 
-        if self._convert_strings:
+        if self._transform:
             if value == 'NA':
                 value = None
             else:
@@ -709,7 +709,7 @@ class IbsFile(object):
 
 
     def _load_numerical_sub_parameter(self, data):
-        if self._convert_strings:
+        if self._transform:
             value = self._load_numerical(data[5])
         else:
             value = data[5].value
@@ -737,12 +737,12 @@ class IbsFile(object):
 
     def _load_ramp_value(self, data):
         if data == 'NA':
-            if self._convert_strings:
+            if self._transform:
                 data = None
         else:
             dv, dt = data.split('/')
 
-            if self._convert_strings:
+            if self._transform:
                 dv = convert_numerical(dv)
                 dt = convert_numerical(dt)
 
@@ -871,19 +871,19 @@ def convert_numerical(string):
     return value
 
 
-def load_file(filename, convert_strings=False):
+def load_file(filename, transform=False):
     """Load given IBIS file and return an IbsFile object with its
     contents.
 
-    Give `convert_strings` as ``True`` to convert numerical numbers
-    from strings to ``decimal.Decimal`` and ``'NA'`` to ``None``.
+    Give `transform` as ``True`` to convert numerical numbers from
+    strings to ``decimal.Decimal`` and ``'NA'`` to ``None``.
 
     """
 
     with open(filename, 'r') as fin:
         string = fin.read()
 
-    return IbsFile(string, convert_strings)
+    return IbsFile(string, transform)
 
 
 def format_or(items):

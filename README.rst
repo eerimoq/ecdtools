@@ -56,6 +56,41 @@ In this example we load an IBS-file and access some of its content.
     ('0.', '0', 'NA', 'NA'),
     ('5', '0', 'NA', 'NA')]
 
+Alternatively, with ``transform=True``, the same input as above gives:
+
+.. code-block:: python
+
+   >>> from pprint import pprint
+   >>> import ecdtools
+   >>> ibs_file = ecdtools.ibis.load_file('tests/files/ibis/pybis/bushold.ibs',
+                                          transform=True)
+   >>> model = ibs_file.get_model_by_name('TOP_MODEL_BUS_HOLD')
+   >>> model.model_type
+   'Input'
+   >>> pprint(model.gnd_clamp)
+   [(Decimal('-2.0000'), Decimal('-6.158E+17'), None, None),
+    (Decimal('-1.9000'), Decimal('-1.697E+16'), None, None),
+    (Decimal('-1.8000'), Decimal('-4.679E+14'), None, None),
+    (Decimal('-1.7000'), Decimal('-1.290E+13'), None, None),
+    (Decimal('-1.6000'), Decimal('-3.556E+11'), None, None),
+    (Decimal('-1.5000'), Decimal('-9.802E+9'), None, None),
+    (Decimal('-1.4000'), Decimal('-2.702E+8'), None, None),
+    (Decimal('-1.3000'), Decimal('-7.449E+6'), None, None),
+    (Decimal('-1.2000'), Decimal('-2.053E+5'), None, None),
+    (Decimal('-1.1000'), Decimal('-5660'), None, None),
+    (Decimal('-1.0000'), Decimal('-156.0'), None, None),
+    (Decimal('-0.90000'), Decimal('-4.308'), None, None),
+    (Decimal('-0.80000'), Decimal('-0.1221'), None, None),
+    (Decimal('-0.70000'), Decimal('-0.004315'), None, None),
+    (Decimal('-0.60000'), Decimal('-0.0001715'), None, None),
+    (Decimal('-0.50000'), Decimal('-0.000004959'), None, None),
+    (Decimal('-0.40000'), Decimal('-1.373E-7'), None, None),
+    (Decimal('-0.30000'), Decimal('-4.075E-9'), None, None),
+    (Decimal('-0.20000'), Decimal('-3.044E-10'), None, None),
+    (Decimal('-0.10000'), Decimal('-1.030E-10'), None, None),
+    (Decimal('0'), Decimal('0'), None, None),
+    (Decimal('5'), Decimal('0'), None, None)]
+
 Contributing
 ============
 
