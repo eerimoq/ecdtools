@@ -7,7 +7,7 @@ from textparser import Sequence
 from textparser import choice
 from textparser import ZeroOrMore
 from textparser import OneOrMore
-from textparser import Any
+from textparser import AnyUntil
 from textparser import Not
 from textparser import Tag
 from textparser import tokenize_init
@@ -226,10 +226,9 @@ class Parser(textparser.Parser):
     def grammar(self):
         nls = OneOrMore('NL')
 
-        any_until_keyword = ZeroOrMore(
-            Sequence(Not(Sequence('NL', choice(*KEYWORDS))), Any()))
+        any_until_keyword = AnyUntil(Sequence('NL', choice(*KEYWORDS)))
 
-        any_until_nl = ZeroOrMore(Sequence(Not(choice('NL', '__EOF__')), Any()))
+        any_until_nl = AnyUntil(choice('NL', '__EOF__'))
 
         sub_parameter = Tag('SubParameter',
                             Sequence(nls, 'WORD', 'WS', 'WORD'))
@@ -558,7 +557,7 @@ class IbsFile(object):
 
     def _load_component(self, tokens):
         component = Component()
-        component.name = tokens[0][1][1].value
+        component.name = tokens[0][1].value
 
         for sub_param in tokens[1]:
             if sub_param[1].value == 'Si_location':
@@ -821,9 +820,7 @@ class IbsFile(object):
                 self._load_numerical(data[7]))
 
     def _load_string(self, data):
-        return ''.join([
-            text.value for _, text in data[0][1:]
-        ])
+        return ''.join([text.value for text in data[0][1:]])
 
     def _load_4_columns(self, data):
         return [
