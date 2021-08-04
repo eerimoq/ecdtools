@@ -407,6 +407,23 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(component.pins[230].r_pin, '32m')
         self.assertEqual(component.pins[230].l_pin, '3.45nH')
         self.assertEqual(component.pins[230].c_pin, '0.46pF')
+        self.assertEqual(len(component.diff_pins), 1)
+        self.assertEqual(component.diff_pins[0].name, 'E17')
+        self.assertEqual(component.diff_pins[0].inv_pin, 'D18')
+        self.assertEqual(component.diff_pins[0].vdiff, '2.0')
+        self.assertEqual(component.diff_pins[0].tdelay_typ, 'NA')
+        self.assertEqual(component.diff_pins[0].tdelay_min, 'NA')
+        self.assertEqual(component.diff_pins[0].tdelay_max, 'NA')
+
+        # Model selector.
+        self.assertEqual(len(ibis_file.model_selectors), 1)
+        model_selector = ibis_file.model_selectors[0]
+        self.assertEqual(model_selector.name, 'BUSB6AU')
+        self.assertEqual(len(model_selector.models), 2)
+        self.assertEqual(model_selector.models[0].name, 'BUSB6AU_HIGH_SPEED')
+        self.assertEqual(model_selector.models[0].description, 'USB_HIGH_SPEED')
+        self.assertEqual(model_selector.models[1].name, 'BUSB6AU_LOW_SPEED')
+        self.assertEqual(model_selector.models[1].description, 'USB_LOW_SPEED')
 
         # Models.
         self.assertEqual(len(ibis_file.models), 14)
@@ -761,6 +778,19 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(ibis.split_numerical('1.1kOhm'), ('1.1', 'k', 'Ohm'))
         self.assertEqual(ibis.split_numerical('5.1e-3V'), ('5.1e-3', '', 'V'))
 
+    def test_get_model_selector_by_name(self):
+        ibis_file = ibis.load_file('tests/files/ibis/pybis/sample1.ibs')
+
+        model_selector = ibis_file.get_model_selector_by_name('BUSB6AU')
+        self.assertEqual(model_selector.name, 'BUSB6AU')
+
+        with self.assertRaises(ecdtools.ibis.Error) as cm:
+            ibis_file.get_model_selector_by_name('Missing')
+
+        self.assertEqual(
+            str(cm.exception),
+            'Expected model selector name BUSB6AU, but got Missing.')
+
     def test_get_model_by_name(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs')
 
@@ -777,8 +807,8 @@ class IbisTest(unittest.TestCase):
     def test_get_component_by_name(self):
         ibis_file = ibis.load_file('tests/files/ibis/pybis/bushold.ibs')
 
-        model = ibis_file.get_component_by_name('BUS-HOLD-SAMPLE')
-        self.assertEqual(model.name, 'BUS-HOLD-SAMPLE')
+        component = ibis_file.get_component_by_name('BUS-HOLD-SAMPLE')
+        self.assertEqual(component.name, 'BUS-HOLD-SAMPLE')
 
         with self.assertRaises(ecdtools.ibis.Error) as cm:
             ibis_file.get_component_by_name('Missing')

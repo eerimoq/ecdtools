@@ -70,6 +70,17 @@ class Pin(object):
         self.c_pin = None
 
 
+class DiffPin(object):
+
+    def __init__(self):
+        self.name = None
+        self.inv_pin = None
+        self.vdiff = None
+        self.tdelay_typ = None
+        self.tdelay_min = None
+        self.tdelay_max = None
+
+
 class Component(object):
 
     def __init__(self):
@@ -79,6 +90,7 @@ class Component(object):
         self.manufacturer = None
         self.package = Package()
         self.pins = []
+        self.diff_pins = []
 
 
 class AddSubmodel(object):
@@ -108,6 +120,20 @@ class Waveform(object):
         self.r_fixture = None
         self.v_fixture = TypMinMax()
         self.table = WaveformTable()
+
+
+class ModelSelectorModel(object):
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+
+class ModelSelector(object):
+
+    def __init__(self):
+        self.name = None
+        self.models = []
 
 
 class Model(object):
@@ -316,7 +342,10 @@ class Parser(textparser.Parser):
                                         ZeroOrMore(Sequence(nls, any_until_nl)))
 
         model_selector = Sequence('[model selector]', 'WS', 'WORD',
-                                  ZeroOrMore(Sequence(nls, 'WORD', any_until_nl)))
+                                  ZeroOrMore(Sequence(nls,
+                                                      'WORD',
+                                                      'WS',
+                                                      any_until_nl)))
 
         model = Sequence('[model]', 'WS', 'WORD',
                          ZeroOrMore(choice(Tag('Quad',
@@ -444,6 +473,7 @@ class IbsFile(object):
         self._disclaimer = None
         self._copyright = None
         self._components = []
+        self._model_selectors = []
         self._models = []
         self._submodels = []
         self._transform = transform
@@ -480,6 +510,10 @@ class IbsFile(object):
                 self._load_package(data)
             elif keyword == '[pin]':
                 self._load_pin(data)
+            elif keyword == '[diff pin]':
+                self._load_diff_pin(data)
+            elif keyword == '[model selector]':
+                self._load_model_selector(data)
             elif keyword == '[model]':
                 self._load_model(data)
             elif keyword == '[add submodel]':
@@ -522,6 +556,14 @@ class IbsFile(object):
         return sorted([component.name for component in self._components])
 
     @property
+    def model_selector_names(self):
+        """A list of all model selector names.
+
+        """
+
+        return sorted([model_selector.name for model_selector in self._model_selectors])
+
+    @property
     def model_names(self):
         """A list of all model names.
 
@@ -540,6 +582,19 @@ class IbsFile(object):
 
         raise Error('Expected component name {}, but got {}.'.format(
             format_or(self.component_names),
+            name))
+
+    def get_model_selector_by_name(self, name):
+        """Get the model selector named `name`.
+
+        """
+
+        for model_selector in self._model_selectors:
+            if model_selector.name == name:
+                return model_selector
+
+        raise Error('Expected model selector name {}, but got {}.'.format(
+            format_or(self.model_selector_names),
             name))
 
     def get_model_by_name(self, name):
@@ -611,6 +666,30 @@ class IbsFile(object):
                 raise InternalError('Bad tag {}.'.format(tag))
 
             pins.append(pin)
+
+    def _load_diff_pin(self, tokens):
+        diff_pins = self._components[-1].diff_pins
+
+        for line in tokens[10]:
+            diff_pin = DiffPin()
+            diff_pin.name = line[1].value
+            diff_pin.inv_pin = line[3].value
+            diff_pin.vdiff = line[5].value
+            diff_pin.tdelay_typ = line[7].value
+            diff_pin.tdelay_min = line[9].value
+            diff_pin.tdelay_max = line[11].value
+            diff_pins.append(diff_pin)
+
+    def _load_model_selector(self, tokens):
+        model_selector = ModelSelector()
+        model_selector.name = tokens[1].value
+
+        for _, name, _, description in tokens[2]:
+            description = ' '.join([token.value for token in description])
+            model = ModelSelectorModel(name.value, description)
+            model_selector.models.append(model)
+
+        self._model_selectors.append(model_selector)
 
     def _load_model(self, tokens):
         model = Model()
@@ -925,6 +1004,14 @@ class IbsFile(object):
         """
 
         return self._models
+
+    @property
+    def model_selectors(self):
+        """A list of all model selectors.
+
+        """
+
+        return self._model_selectors
 
     @property
     def submodels(self):
