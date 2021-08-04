@@ -368,8 +368,8 @@ class IbisTest(unittest.TestCase):
         # General information.
         self.assertEqual(ibis_file.ibis_version, '3.2')
         self.assertEqual(ibis_file.file_name, 'sample1.ibs')
-        self.assertEqual(ibis_file.file_revision, '0')
-        self.assertEqual(ibis_file.date, '10/23/2001')
+        self.assertEqual(ibis_file.file_revision, '@(#)$Revision: 0.1')
+        self.assertEqual(ibis_file.date, 'September 11, 2015')
         self.assertEqual(ibis_file.source, 'Company_ABC, Adapted From Real IBIS Model')
         self.assertEqual(ibis_file.notes, None)
         self.assertEqual(ibis_file.disclaimer, None)
@@ -552,8 +552,8 @@ class IbisTest(unittest.TestCase):
         # General information.
         self.assertEqual(ibis_file.ibis_version, '3.2')
         self.assertEqual(ibis_file.file_name, 'sample1.ibs')
-        self.assertEqual(ibis_file.file_revision, '0')
-        self.assertEqual(ibis_file.date, '10/23/2001')
+        self.assertEqual(ibis_file.file_revision, '@(#)$Revision: 0.1')
+        self.assertEqual(ibis_file.date, 'September 11, 2015')
         self.assertEqual(ibis_file.source, 'Company_ABC, Adapted From Real IBIS Model')
         self.assertEqual(ibis_file.notes, None)
         self.assertEqual(ibis_file.disclaimer, None)

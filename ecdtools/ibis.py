@@ -276,13 +276,13 @@ class Parser(textparser.Parser):
         ibis_ver = Sequence(Optional(nls),
                             '__SOF__',
                             Optional(nls),
-                            '[ibis ver]', 'WS', 'WORD')
+                            '[ibis ver]', any_until_nl)
 
         comment_char = Sequence('[comment char]')
 
-        file_name = Sequence('[file name]', 'WS', 'WORD')
+        file_name = Sequence('[file name]', any_until_nl)
 
-        file_rev = Sequence('[file rev]', 'WS', 'WORD')
+        file_rev = Sequence('[file rev]', any_until_nl)
 
         date = Sequence('[date]', any_until_nl)
 
@@ -482,16 +482,16 @@ class IbsFile(object):
         string = re.sub(r'[ \t]+\n', '\n', string)
         tokens = Parser().parse(string, token_tree=True, match_sof=True)
 
-        self._ibis_version = tokens[0][5].value
+        self._ibis_version = self._load_string([tokens[0][4]])
 
         for item in tokens[1]:
             keyword = item[1][0].kind
             data = item[1][1:]
 
             if keyword == '[file name]':
-                self._file_name = data[1].value
+                self._file_name = self._load_string(data)
             elif keyword == '[file rev]':
-                self._file_revision = data[1].value
+                self._file_revision = self._load_string(data)
             elif keyword == '[date]':
                 self._date = self._load_string(data)
             elif keyword == '[source]':

@@ -2,8 +2,8 @@
 |
 [IBIS ver]          3.2
 [File name]         sample1.ibs
-[File Rev]          0
-[Date]              10/23/2001
+[File Rev]          @(#)$Revision: 0.1
+[Date]              September 11, 2015
 [Source]            Company_ABC, Adapted From Real IBIS Model
 [Copyright]         Public Sample
 |
