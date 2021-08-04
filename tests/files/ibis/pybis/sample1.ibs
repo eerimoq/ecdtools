@@ -254,7 +254,7 @@ Y9      sc_moden          BPS2P4F_PU50K     32m     3.45nH  0.46pF
 [Diff Pin] inv_pin vdiff tdelay_typ tdelay_min tdelay_max 
 E17     D18     2.0         NA              NA              NA              
 [Model Selector]    BUSB6AU
-BUSB6AU_HIGH_SPEED       USB_HIGH_SPEED                    
+BUSB6AU_HIGH_SPEED       USB_HIGH_SPEED foo bar                    
 BUSB6AU_LOW_SPEED        USB_LOW_SPEED                    
 |
 |************************************************************************

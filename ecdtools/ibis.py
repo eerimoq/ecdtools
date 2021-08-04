@@ -685,7 +685,7 @@ class IbsFile(object):
         model_selector.name = tokens[1].value
 
         for _, name, _, description in tokens[2]:
-            description = ' '.join([token.value for token in description])
+            description = self._load_string([[None] + description])
             model = ModelSelectorModel(name.value, description)
             model_selector.models.append(model)
 

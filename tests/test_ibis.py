@@ -421,7 +421,7 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(model_selector.name, 'BUSB6AU')
         self.assertEqual(len(model_selector.models), 2)
         self.assertEqual(model_selector.models[0].name, 'BUSB6AU_HIGH_SPEED')
-        self.assertEqual(model_selector.models[0].description, 'USB_HIGH_SPEED')
+        self.assertEqual(model_selector.models[0].description, 'USB_HIGH_SPEED foo bar')
         self.assertEqual(model_selector.models[1].name, 'BUSB6AU_LOW_SPEED')
         self.assertEqual(model_selector.models[1].description, 'USB_LOW_SPEED')
 
