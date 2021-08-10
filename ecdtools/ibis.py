@@ -250,7 +250,7 @@ class Parser(textparser.Parser):
         return tokens
 
     def grammar(self):
-        nls = OneOrMore('NL')
+        nls = OneOrMore(Sequence('NL', Optional('WS')))
 
         any_until_keyword = AnyUntil(Sequence('NL', choice(*KEYWORDS)))
 

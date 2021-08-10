@@ -15,9 +15,9 @@
 [Manufacturer]      Company_ABC
 [Package]
 | variable       typ                 min                 max
-R_pkg     0.0m    0.0m            0.0m            
-L_pkg     3.0nH   2.0nH           4.0nH           
-C_pkg     0.5pF   0.3pF           0.8pf           
+  R_pkg     0.0m    0.0m            0.0m            
+  L_pkg     3.0nH   2.0nH           4.0nH           
+  C_pkg     0.5pF   0.3pF           0.8pf           
 [Pin] signal_name     model_name      R_pin     L_pin     C_pin     
 A10     cs1               BT2Z50CX          32m     3.44nH  0.46pF  
 A11     wrn               BT2Z50CX          31m     3.39nH  0.46pF  
