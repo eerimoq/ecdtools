@@ -840,5 +840,22 @@ class IbisTest(unittest.TestCase):
         for filename in filenames:
             ibis.load_file('tests/files/ibis/pybis/' + filename)
 
+    def test_no_r_l_c_pin_columns(self):
+        ibis_file = ibis.load_file('tests/files/ibis/pybis/no_r_l_c_pin_columns.ibs')
+
+        # Components.
+        self.assertEqual(len(ibis_file.components), 1)
+
+        # First (and only) component.
+        component = ibis_file.components[0]
+
+        self.assertEqual(len(component.pins), 3)
+        self.assertEqual(component.pins[0].name, '1')
+        self.assertEqual(component.pins[0].signal_name, 'Sample1')
+        self.assertEqual(component.pins[0].model_name, 'TOP_MODEL_TERM')
+        self.assertEqual(component.pins[0].r_pin, None)
+        self.assertEqual(component.pins[0].l_pin, None)
+        self.assertEqual(component.pins[0].c_pin, None)
+
 
 logging.basicConfig(level=logging.DEBUG)

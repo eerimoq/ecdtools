@@ -308,9 +308,9 @@ class Parser(textparser.Parser):
         pin = Sequence('[pin]',
                        'WS', 'WORD',
                        'WS', 'WORD',
-                       'WS', 'WORD',
-                       'WS', 'WORD',
-                       'WS', 'WORD',
+                       Optional(Sequence('WS', 'WORD',
+                                         'WS', 'WORD',
+                                         'WS', 'WORD')),
                        ZeroOrMore(choice(Tag('All',
                                              Sequence(nls,
                                                       Optional('WS'), 'WORD',
@@ -648,7 +648,7 @@ class IbsFile(object):
     def _load_pin(self, tokens):
         pins = self._components[-1].pins
 
-        for tag, data in tokens[10]:
+        for tag, data in tokens[5]:
             pin = Pin()
 
             if tag == 'All':
