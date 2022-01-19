@@ -152,6 +152,10 @@ class Model(object):
         self.rref = None
         self.temperature_range = TypMinMax()
         self.voltage_range = TypMinMax()
+        self.pullup_reference = TypMinMax()
+        self.pulldown_reference = TypMinMax()
+        self.power_clamp_reference = TypMinMax()
+        self.gnd_clamp_reference = TypMinMax()
         self.gnd_clamp = None
         self.power_clamp = None
         self.pullup = None
@@ -201,6 +205,8 @@ KEYWORDS = set([
     '[voltage range]',
     '[pullup reference]',
     '[pulldown reference]',
+    '[power clamp reference]',
+    '[gnd clamp reference]'
     '[gnd clamp]',
     '[power clamp]',
     '[pullup]',
@@ -379,6 +385,16 @@ class Parser(textparser.Parser):
                                       'WS', 'WORD',
                                       'WS', 'WORD')
 
+        power_clamp_reference = Sequence('[power clamp reference]',
+                                         'WS', 'WORD',
+                                         'WS', 'WORD',
+                                         'WS', 'WORD')
+
+        gnd_clamp_reference = Sequence('[gnd clamp reference]',
+                                       'WS', 'WORD',
+                                       'WS', 'WORD',
+                                       'WS', 'WORD')
+
         quad_table = ZeroOrMore(Sequence(nls,
                                          Optional('WS'), 'WORD',
                                          'WS', 'WORD',
@@ -443,6 +459,8 @@ class Parser(textparser.Parser):
                                        voltage_range,
                                        pullup_reference,
                                        pulldown_reference,
+                                       power_clamp_reference,
+                                       gnd_clamp_reference,
                                        gnd_clamp,
                                        power_clamp,
                                        pullup,
@@ -522,6 +540,14 @@ class IbsFile(object):
                 self._load_temperature_range(data)
             elif keyword == '[voltage range]':
                 self._load_voltage_range(data)
+            elif keyword == '[pullup reference]':
+                self._load_pullup_reference(data)
+            elif keyword == '[pulldown reference]':
+                self._load_pulldown_reference(data)
+            elif keyword == '[power clamp reference]':
+                self._load_power_clamp_reference(data)
+            elif keyword == '[gnd clamp reference]':
+                self._load_gnd_clamp_reference(data)
             elif keyword == '[gnd clamp]':
                 self._models[-1].gnd_clamp = self._load_4_columns(data)
             elif keyword == '[power clamp]':
@@ -746,13 +772,33 @@ class IbsFile(object):
 
     def _load_temperature_range(self, tokens):
         self._models[-1].temperature_range.typical = self._load_numerical(tokens[1])
-        self._models[-1].temperature_range.minimum = self._load_numerical(tokens[5])
-        self._models[-1].temperature_range.maximum = self._load_numerical(tokens[3])
+        self._models[-1].temperature_range.minimum = self._load_numerical(tokens[3])
+        self._models[-1].temperature_range.maximum = self._load_numerical(tokens[5])
 
     def _load_voltage_range(self, tokens):
         self._models[-1].voltage_range.typical = self._load_numerical(tokens[1])
         self._models[-1].voltage_range.minimum = self._load_numerical(tokens[3])
         self._models[-1].voltage_range.maximum = self._load_numerical(tokens[5])
+
+    def _load_pullup_reference(self, tokens):
+        self._models[-1].pullup_reference.typical = self._load_numerical(tokens[1])
+        self._models[-1].pullup_reference.minimum = self._load_numerical(tokens[3])
+        self._models[-1].pullup_reference.maximum = self._load_numerical(tokens[5])
+
+    def _load_pulldown_reference(self, tokens):
+        self._models[-1].pulldown_reference.typical = self._load_numerical(tokens[1])
+        self._models[-1].pulldown_reference.minimum = self._load_numerical(tokens[3])
+        self._models[-1].pulldown_reference.maximum = self._load_numerical(tokens[5])
+
+    def _load_power_clamp_reference(self, tokens):
+        self._models[-1].power_clamp_reference.typical = self._load_numerical(tokens[1])
+        self._models[-1].power_clamp_reference.minimum = self._load_numerical(tokens[3])
+        self._models[-1].power_clamp_reference.maximum = self._load_numerical(tokens[5])
+
+    def _load_gnd_clamp_reference(self, tokens):
+        self._models[-1].gnd_clamp_reference.typical = self._load_numerical(tokens[1])
+        self._models[-1].gnd_clamp_reference.minimum = self._load_numerical(tokens[3])
+        self._models[-1].gnd_clamp_reference.maximum = self._load_numerical(tokens[5])
 
     def _load_ramp(self, tokens):
         ramp = Ramp()
