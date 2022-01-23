@@ -857,5 +857,44 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(component.pins[0].l_pin, None)
         self.assertEqual(component.pins[0].c_pin, None)
 
+    def test_device_clamp_ref(self):
+        ibis_file = ibis.load_file('tests/files/ibis/device_clamp_ref.ibs', transform=True)
+
+        # Check the IN pin
+        model = ibis_file.get_model_by_name('IN')
+        self.assertEqual(model.pullup_reference.minimum, 4.5)
+        self.assertEqual(model.pullup_reference.typical, 5)
+        self.assertEqual(model.pullup_reference.maximum, 5.5)
+
+        self.assertEqual(model.pulldown_reference.minimum, 0)
+        self.assertEqual(model.pulldown_reference.typical, 0)
+        self.assertEqual(model.pulldown_reference.maximum, 0)
+
+        self.assertEqual(model.power_clamp_reference.minimum, 4.5)
+        self.assertEqual(model.power_clamp_reference.typical, 5)
+        self.assertEqual(model.power_clamp_reference.maximum, 5.5)
+
+        self.assertEqual(model.gnd_clamp_reference.minimum, 0)
+        self.assertEqual(model.gnd_clamp_reference.typical, 0)
+        self.assertEqual(model.gnd_clamp_reference.maximum, 0)
+
+        # Check the OUT pin
+        model = ibis_file.get_model_by_name('IN')
+        self.assertEqual(model.pullup_reference.minimum, 4.5)
+        self.assertEqual(model.pullup_reference.typical, 5)
+        self.assertEqual(model.pullup_reference.maximum, 5.5)
+
+        self.assertEqual(model.pulldown_reference.minimum, 0)
+        self.assertEqual(model.pulldown_reference.typical, 0)
+        self.assertEqual(model.pulldown_reference.maximum, 0)
+
+        self.assertEqual(model.power_clamp_reference.minimum, 4.5)
+        self.assertEqual(model.power_clamp_reference.typical, 5)
+        self.assertEqual(model.power_clamp_reference.maximum, 5.5)
+
+        self.assertEqual(model.gnd_clamp_reference.minimum, 0)
+        self.assertEqual(model.gnd_clamp_reference.typical, 0)
+        self.assertEqual(model.gnd_clamp_reference.maximum, 0)
+
 
 logging.basicConfig(level=logging.DEBUG)
