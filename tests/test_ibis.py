@@ -860,41 +860,41 @@ class IbisTest(unittest.TestCase):
     def test_device_clamp_ref(self):
         ibis_file = ibis.load_file('tests/files/ibis/device_clamp_ref.ibs', transform=True)
 
-        # Check the IN pin
+        # Check the IN model
         model = ibis_file.get_model_by_name('IN')
-        self.assertEqual(model.pullup_reference.minimum, 4.5)
-        self.assertEqual(model.pullup_reference.typical, 5)
-        self.assertEqual(model.pullup_reference.maximum, 5.5)
+        self.assertEqual(model.pullup_reference.minimum, Decimal('4.5'))
+        self.assertEqual(model.pullup_reference.typical, Decimal('5'))
+        self.assertEqual(model.pullup_reference.maximum, Decimal('5.5'))
 
-        self.assertEqual(model.pulldown_reference.minimum, 0)
-        self.assertEqual(model.pulldown_reference.typical, 0)
-        self.assertEqual(model.pulldown_reference.maximum, 0)
+        self.assertEqual(model.pulldown_reference.minimum, Decimal('-0.5'))
+        self.assertEqual(model.pulldown_reference.typical, Decimal('0'))
+        self.assertEqual(model.pulldown_reference.maximum, Decimal('0.5'))
 
-        self.assertEqual(model.power_clamp_reference.minimum, 4.5)
-        self.assertEqual(model.power_clamp_reference.typical, 5)
-        self.assertEqual(model.power_clamp_reference.maximum, 5.5)
+        self.assertEqual(model.power_clamp_reference.minimum, Decimal('4.5'))
+        self.assertEqual(model.power_clamp_reference.typical, Decimal('5'))
+        self.assertEqual(model.power_clamp_reference.maximum, Decimal('5.5'))
 
-        self.assertEqual(model.gnd_clamp_reference.minimum, 0)
-        self.assertEqual(model.gnd_clamp_reference.typical, 0)
-        self.assertEqual(model.gnd_clamp_reference.maximum, 0)
+        self.assertEqual(model.gnd_clamp_reference.minimum, Decimal('-0.5'))
+        self.assertEqual(model.gnd_clamp_reference.typical, Decimal('0'))
+        self.assertEqual(model.gnd_clamp_reference.maximum, Decimal('0.5'))
 
-        # Check the OUT pin
-        model = ibis_file.get_model_by_name('IN')
-        self.assertEqual(model.pullup_reference.minimum, 4.5)
-        self.assertEqual(model.pullup_reference.typical, 5)
-        self.assertEqual(model.pullup_reference.maximum, 5.5)
+        # Check the OUT model
+        model = ibis_file.get_model_by_name('OUT')
+        self.assertEqual(model.pullup_reference.minimum, Decimal('2.7'))
+        self.assertEqual(model.pullup_reference.typical, Decimal('3'))
+        self.assertEqual(model.pullup_reference.maximum, Decimal('3.3'))
 
-        self.assertEqual(model.pulldown_reference.minimum, 0)
-        self.assertEqual(model.pulldown_reference.typical, 0)
-        self.assertEqual(model.pulldown_reference.maximum, 0)
+        self.assertEqual(model.pulldown_reference.minimum, Decimal('-0.5'))
+        self.assertEqual(model.pulldown_reference.typical, Decimal('0'))
+        self.assertEqual(model.pulldown_reference.maximum, Decimal('0.5'))
 
-        self.assertEqual(model.power_clamp_reference.minimum, 4.5)
-        self.assertEqual(model.power_clamp_reference.typical, 5)
-        self.assertEqual(model.power_clamp_reference.maximum, 5.5)
+        self.assertEqual(model.power_clamp_reference.minimum, Decimal('2.7'))
+        self.assertEqual(model.power_clamp_reference.typical, Decimal('3'))
+        self.assertEqual(model.power_clamp_reference.maximum, Decimal('3.3'))
 
-        self.assertEqual(model.gnd_clamp_reference.minimum, 0)
-        self.assertEqual(model.gnd_clamp_reference.typical, 0)
-        self.assertEqual(model.gnd_clamp_reference.maximum, 0)
+        self.assertEqual(model.gnd_clamp_reference.minimum, Decimal('-0.5'))
+        self.assertEqual(model.gnd_clamp_reference.typical, Decimal('0'))
+        self.assertEqual(model.gnd_clamp_reference.maximum, Decimal('0.5'))
 
 
 logging.basicConfig(level=logging.DEBUG)

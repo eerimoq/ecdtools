@@ -40,9 +40,9 @@ C_comp                    0.96pF              0.53pF              1.60pF
 [Temperature Range]       25                  -40                 85
 [Voltage Range]           5.00V               4.50V               5.50V
 [Pullup Reference]        5.00V               4.50V               5.50V
-[Pulldown Reference]      0.00V               0.00V               0.00V
+[Pulldown Reference]      0.00V               -0.5V               0.5V
 [POWER Clamp Reference]   5.00V               4.50V               5.50V 
-[GND Clamp Reference]     0.00V               0.00V               0.00V
+[GND Clamp Reference]     0.00V               -0.5V               0.5V
 |
 [POWER_clamp]
 |
@@ -140,11 +140,11 @@ Polarity         Non-Inverting
 Vmeas = 2.5V
 C_comp                    0.83pF              0.57pF              1.46pF
 [Temperature Range]       25                   -40                125
-[Voltage Range]           5.00V               4.50V               5.50V
-[Pullup Reference]        5.00V               4.50V               5.50V
-[Pulldown Reference]      0.00V               0.00V               0.00V
-[POWER Clamp Reference]   5.00V               4.50V               5.50V
-[GND Clamp Reference]     0.00V               0.00V               0.00V
+[Voltage Range]           3.00V               2.70V               3.30V
+[Pullup Reference]        3.00V               2.70V               3.30V
+[Pulldown Reference]      0.00V               -0.5V               0.5V
+[POWER Clamp Reference]   3.00V               2.70V               3.30V
+[GND Clamp Reference]     0.00V               -0.5V               0.5V
 |
 |****************************************************************************
 |
