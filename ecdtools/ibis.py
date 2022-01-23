@@ -206,7 +206,7 @@ KEYWORDS = set([
     '[pullup reference]',
     '[pulldown reference]',
     '[power clamp reference]',
-    '[gnd clamp reference]'
+    '[gnd clamp reference]',
     '[gnd clamp]',
     '[power clamp]',
     '[pullup]',
@@ -772,8 +772,8 @@ class IbsFile(object):
 
     def _load_temperature_range(self, tokens):
         self._models[-1].temperature_range.typical = self._load_numerical(tokens[1])
-        self._models[-1].temperature_range.minimum = self._load_numerical(tokens[3])
-        self._models[-1].temperature_range.maximum = self._load_numerical(tokens[5])
+        self._models[-1].temperature_range.minimum = self._load_numerical(tokens[5])
+        self._models[-1].temperature_range.maximum = self._load_numerical(tokens[3])
 
     def _load_voltage_range(self, tokens):
         self._models[-1].voltage_range.typical = self._load_numerical(tokens[1])
