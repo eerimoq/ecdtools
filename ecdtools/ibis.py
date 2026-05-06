@@ -228,7 +228,7 @@ class Parser(textparser.Parser):
 
     def tokenize(self, string):
         token_specs = [
-            ('SKIP',     r'\r+|\s*\(?=\s|\*)[^\n]*'),
+            ('SKIP',     r'\r+|\s*\|(?=\s|\*)[^\n]*|([a-zA-Z]+\b)+[^\n]*'),
             ('NL',       r'\n'),
             ('KEYWORD',  r'\[.+?\]'),
             ('WORD',     r'[^ \n\t\r\f\v\|=]+'),
