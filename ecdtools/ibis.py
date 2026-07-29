@@ -146,6 +146,10 @@ class Model(object):
         self.vinl = None
         self.vinh = None
         self.c_comp = TypMinMax()
+        self.c_comp_pullup = TypMinMax()
+        self.c_comp_pulldown = TypMinMax()
+        self.c_comp_power_clamp = TypMinMax()
+        self.c_comp_gnd_clamp = TypMinMax()
         self.vmeas = None
         self.cref = None
         self.vref = None
@@ -756,6 +760,22 @@ class IbsFile(object):
                     model.c_comp.typical = self._load_numerical(data[3])
                     model.c_comp.minimum = self._load_numerical(data[5])
                     model.c_comp.maximum = self._load_numerical(data[7])
+                elif data[1].value =='C_comp_pullup':
+                    model.c_comp_pullup.typical = self._load_numerical(data[3])
+                    model.c_comp_pullup.minimum = self._load_numerical(data[5])
+                    model.c_comp_pullup.maximum = self._load_numerical(data[7])
+                elif data[1].value =='C_comp_pulldown':
+                    model.c_comp_pulldown.typical = self._load_numerical(data[3])
+                    model.c_comp_pulldown.minimum = self._load_numerical(data[5])
+                    model.c_comp_pulldown.maximum = self._load_numerical(data[7])
+                elif data[1].value =='C_comp_power_clamp':
+                    model.c_comp_power_clamp.typical = self._load_numerical(data[3])
+                    model.c_comp_power_clamp.minimum = self._load_numerical(data[5])
+                    model.c_comp_power_clamp.maximum = self._load_numerical(data[7])
+                elif data[1].value =='C_comp_gnd_clamp':
+                    model.c_comp_gnd_clamp.typical = self._load_numerical(data[3])
+                    model.c_comp_gnd_clamp.minimum = self._load_numerical(data[5])
+                    model.c_comp_gnd_clamp.maximum = self._load_numerical(data[7])
                 else:
                     LOGGER.debug('Unsupported [Model] data %s.', data[1].value)
             else:

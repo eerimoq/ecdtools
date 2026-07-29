@@ -897,5 +897,54 @@ class IbisTest(unittest.TestCase):
         self.assertEqual(model.gnd_clamp_reference.typical, Decimal('0'))
         self.assertEqual(model.gnd_clamp_reference.maximum, Decimal('0.5'))
 
+    def test_c_comp_extended(self):
+        ibis_file = ibis.load_file('tests/files/ibis/c_comp_extended.ibs',
+                                   transform=True)
+        
+        # Check the IN model
+        model: ibis.Model = ibis_file.get_model_by_name('IN')
 
+        self.assertIs(model.c_comp.minimum, None)
+        self.assertIs(model.c_comp.typical, None)
+        self.assertIs(model.c_comp.maximum, None)
+
+        self.assertIs(model.c_comp_pullup.minimum, None)
+        self.assertIs(model.c_comp_pullup.typical, None)
+        self.assertIs(model.c_comp_pullup.maximum, None)
+
+        self.assertIs(model.c_comp_pulldown.minimum, None)
+        self.assertIs(model.c_comp_pulldown.typical, None)
+        self.assertIs(model.c_comp_pulldown.maximum, None)
+
+        self.assertEqual(model.c_comp_gnd_clamp.minimum, Decimal('0.54e-12'))
+        self.assertEqual(model.c_comp_gnd_clamp.typical, Decimal('0.576e-12'))
+        self.assertEqual(model.c_comp_gnd_clamp.maximum, Decimal('0.66e-12'))
+
+        self.assertEqual(model.c_comp_power_clamp.minimum, Decimal('0.52e-12'))
+        self.assertEqual(model.c_comp_power_clamp.typical, Decimal('0.574e-12'))
+        self.assertEqual(model.c_comp_power_clamp.maximum, Decimal('0.645e-12'))
+
+        # Check the OUT model
+        model = ibis_file.get_model_by_name('OUT')
+
+        self.assertIs(model.c_comp.minimum, None)
+        self.assertIs(model.c_comp.typical, None)
+        self.assertIs(model.c_comp.maximum, None)
+
+        self.assertIs(model.c_comp_gnd_clamp.minimum, None)
+        self.assertIs(model.c_comp_gnd_clamp.typical, None)
+        self.assertIs(model.c_comp_gnd_clamp.maximum, None)
+
+        self.assertIs(model.c_comp_power_clamp.minimum, None)
+        self.assertIs(model.c_comp_power_clamp.typical, None)
+        self.assertIs(model.c_comp_power_clamp.maximum, None)
+
+        self.assertEqual(model.c_comp_pullup.minimum, Decimal('0.6e-12'))
+        self.assertEqual(model.c_comp_pullup.typical, Decimal('0.6520e-12'))
+        self.assertEqual(model.c_comp_pullup.maximum, Decimal('0.688e-12'))
+
+        self.assertEqual(model.c_comp_pulldown.minimum, Decimal('0.62e-12'))
+        self.assertEqual(model.c_comp_pulldown.typical, Decimal('0.6500e-12'))
+        self.assertEqual(model.c_comp_pulldown.maximum, Decimal('0.69e-12'))
+        
 logging.basicConfig(level=logging.DEBUG)
