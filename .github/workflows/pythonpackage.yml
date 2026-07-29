@@ -27,7 +27,7 @@ jobs:
 
   release:
     needs: [linux]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags')
     steps:
     - name: Checkout
