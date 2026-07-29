@@ -16,8 +16,6 @@ from textparser import TokenizeError
 from textparser import Optional
 
 
-__version__ = '0.1.0'
-
 LOGGER = logging.getLogger(__name__)
 
 RE_NUMERICAL = re.compile(r'(-?\d+\.?\d*([eE][+-]?\d+)?)(\w?)(\w*)')
